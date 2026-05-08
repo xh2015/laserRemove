@@ -1,5 +1,8 @@
 package com.topsky.laserremove.ui;
 
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
@@ -17,6 +20,9 @@ import com.topsky.laserremove.constant.CommonData;
 import com.topsky.laserremove.databinding.ActivityMainBinding;
 import com.topsky.laserremove.manager.MP4RecordHelper;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 
 import androidx.annotation.NonNull;
@@ -37,6 +43,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     private void initView() {
         binding.btnRecord.setOnClickListener(this);
+        binding.btnScreenshot.setOnClickListener(this);
     }
 
     private void initFPV() {
@@ -62,6 +69,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         if (v.getId() == R.id.btn_record) {
             //录屏
             recordOpt();
+        } else if (v.getId() == R.id.btn_screenshot) {
+            //截图
+            takeScreenshot();
         }
     }
 
@@ -74,9 +84,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         }
     }
 
-    //region 录屏
+    //region 录像 截图
     private MP4RecordHelper mp4RecordHelper;
     private boolean isStartRecord = false;
+
+    //截图
+    private ByteBuffer latestYUVData;
+    private int latestWidth;
+    private int latestHeight;
+    private int latestPixelFormat;
+    private boolean hasValidFrame = false;
 
     private void initRecord() {
         mp4RecordHelper = new MP4RecordHelper();
@@ -106,7 +123,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         mp4RecordHelper.setFrameRate(15);//输出帧率
         mp4RecordHelper.setVideoSize(1280, 720); //输出分辨率
         mp4RecordHelper.setUseSoftEncoder(true);//true:软编码（X264），false:硬编码
-        String path = PathUtils.getExternalDownloadsPath() + "/" + System.currentTimeMillis() + ".mp4";
+        String path = PathUtils.getExternalDownloadsPath() + "/laser_" + System.currentTimeMillis() + ".mp4";
         Exception ret = mp4RecordHelper.start(path);
         if (ret == null) {
             isStartRecord = true;
@@ -127,6 +144,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         if (mp4RecordHelper != null) {
             mp4RecordHelper.putYUV(data, width, height, pixel_format);
         }
+
+        latestYUVData = ByteBuffer.allocateDirect(data.remaining());
+        latestYUVData.put(data.duplicate());
+        latestWidth = width;
+        latestHeight = height;
+        latestPixelFormat = pixel_format;
+        hasValidFrame = true;
     }
 
     @Override
@@ -143,6 +167,64 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             binding.btnRecord.setText("停止录像");
         } else {
             binding.btnRecord.setText("开始录像");
+        }
+    }
+
+    private void takeScreenshot() {
+        if (!hasValidFrame || latestYUVData == null) {
+            Toast.makeText(this, "暂无视频帧数据，请确保RTSP流已启动", Toast.LENGTH_SHORT).show();
+            LogUtils.e("截图失败：没有可用的视频帧数据");
+            return;
+        }
+
+        try {
+            String screenshotPath = PathUtils.getExternalPicturesPath() + "/laser_" + System.currentTimeMillis() + ".jpg";
+
+            new Thread(() -> {
+                try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    latestYUVData.rewind();
+                    byte[] yuvData = new byte[latestYUVData.remaining()];
+                    latestYUVData.get(yuvData);
+
+                    YuvImage yuvImage = new YuvImage(
+                            yuvData,
+                            ImageFormat.NV21,
+                            latestWidth,
+                            latestHeight,
+                            null
+                    );
+
+                    yuvImage.compressToJpeg(
+                            new Rect(0, 0, latestWidth, latestHeight),
+                            90,
+                            baos
+                    );
+
+                    byte[] jpegData = baos.toByteArray();
+
+                    File file = new File(screenshotPath);
+                    FileOutputStream fos = new FileOutputStream(file);
+                    fos.write(jpegData);
+                    fos.flush();
+                    fos.close();
+
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "截图已保存: " + file.getName(), Toast.LENGTH_LONG).show();
+                        LogUtils.i("截图成功: " + screenshotPath);
+                    });
+
+                } catch (Exception e) {
+                    LogUtils.e("截图保存失败: " + e.getMessage());
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "截图保存失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }).start();
+
+        } catch (Exception e) {
+            LogUtils.e("截图失败: " + e.getMessage());
         }
     }
 //endregion
