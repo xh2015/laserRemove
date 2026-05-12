@@ -1,5 +1,6 @@
 package com.topsky.laserremove.ui;
 
+import android.annotation.SuppressLint;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -19,6 +20,7 @@ import com.topsky.laserremove.base.BaseActivity;
 import com.topsky.laserremove.constant.CommonData;
 import com.topsky.laserremove.databinding.ActivityMainBinding;
 import com.topsky.laserremove.manager.MP4RecordHelper;
+import com.topsky.laserremove.utils.LocationUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,7 +29,7 @@ import java.nio.ByteBuffer;
 
 import androidx.annotation.NonNull;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, VideoDecoderCallBack, MP4RecordHelper.MP4RecordCallBack {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, VideoDecoderCallBack, MP4RecordHelper.MP4RecordCallBack, LocationUtils.onLocationListener {
 
     @Override
     protected ActivityMainBinding initViewBinding(LayoutInflater inflater) {
@@ -39,6 +41,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         initFPV();
         initView();
         initRecord();
+        initLocation();
     }
 
     private void initView() {
@@ -227,5 +230,26 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             LogUtils.e("截图失败: " + e.getMessage());
         }
     }
-//endregion
+    //endregion
+
+    //region定位信息
+    @SuppressLint("MissingPermission")
+    private void initLocation() {
+        XXPermissions.with(this)
+                .permission(PermissionLists.getAccessFineLocationPermission())
+                .permission(PermissionLists.getAccessCoarseLocationPermission())
+                .request((grantedList, deniedList) -> {
+                    boolean allGranted = deniedList.isEmpty();
+                    if (allGranted) {
+                        LocationUtils.getInstance().setOnLocationListener(MainActivity.this);
+                        LocationUtils.getInstance().getLocation();
+                    }
+                });
+    }
+
+    @Override
+    public void onLocationSuccess(double longitude, double latitude) {
+        LogUtils.i("定位成功：" + longitude + " " + latitude);
+    }
+    //endregion
 }
