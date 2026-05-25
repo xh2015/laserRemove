@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
         binding.fpvWidget.setVideoDecoderCallBack(this);
 
-        //binding.fpvWidget.start();
+        binding.fpvWidget.start();
 
     }
 
@@ -119,6 +119,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     private void startRecord() {
         if (mp4RecordHelper == null) {
+            return;
+        }
+        if (!hasValidFrame || latestYUVData == null) {
+            Toast.makeText(this, "暂无视频帧数据，请确保RTSP流已启动", Toast.LENGTH_SHORT).show();
+            LogUtils.e("录像失败：没有可用的视频帧数据");
             return;
         }
         mp4RecordHelper.setBitrate(1500000);//比特率
