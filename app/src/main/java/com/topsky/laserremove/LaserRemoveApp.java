@@ -6,15 +6,11 @@ import com.google.gson.stream.JsonToken;
 import com.hjq.gson.factory.GsonFactory;
 import com.hjq.gson.factory.ParseExceptionCallback;
 import com.hjq.http.EasyConfig;
-import com.hjq.http.config.IRequestInterceptor;
 import com.hjq.http.config.IRequestServer;
-import com.hjq.http.model.HttpHeaders;
-import com.hjq.http.model.HttpParams;
-import com.hjq.http.request.HttpRequest;
 import com.topsky.laserremove.net.CameraServer;
 import com.topsky.laserremove.net.RequestHandler;
+import com.topsky.laserremove.utils.LocalCacheUtil;
 
-import androidx.annotation.NonNull;
 import androidx.multidex.MultiDexApplication;
 import okhttp3.OkHttpClient;
 
@@ -67,19 +63,6 @@ public class LaserRemoveApp extends MultiDexApplication {
                 .setServer(server)
                 // 设置请求处理策略（必须设置）
                 .setHandler(new RequestHandler(this))
-                // 设置请求参数拦截器
-                .setInterceptor(new IRequestInterceptor() {
-                    @Override
-                    public void interceptArguments(@NonNull HttpRequest<?> httpRequest,
-                                                   @NonNull HttpParams params,
-                                                   @NonNull HttpHeaders headers) {
-                        headers.put("timestamp", String.valueOf(System.currentTimeMillis()));
-                    }
-                })
-                // 设置请求重试次数
-                .setRetryCount(1)
-                // 设置请求重试时间
-                .setRetryTime(2000)
                 .into();
     }
 }
