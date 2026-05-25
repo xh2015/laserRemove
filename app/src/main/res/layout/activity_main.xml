@@ -20,6 +20,27 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/btn_zoom_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="停止" />
+
+        <Button
+            android:id="@+id/btn_zoom_big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="放大" />
+
+        <Button
+            android:id="@+id/btn_zoom_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="缩小" />
+
+        <Button
             android:id="@+id/btn_screenshot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

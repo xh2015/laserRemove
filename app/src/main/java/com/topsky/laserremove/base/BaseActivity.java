@@ -1,5 +1,6 @@
 package com.topsky.laserremove.base;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,12 +8,16 @@ import android.view.LayoutInflater;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.gyf.immersionbar.BarHide;
 import com.gyf.immersionbar.ImmersionBar;
+import com.hjq.http.config.IRequestApi;
+import com.hjq.http.listener.OnHttpListener;
+import com.topsky.laserremove.R;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewbinding.ViewBinding;
 
-public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActivity implements HandlerAction {
+public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActivity implements HandlerAction, OnHttpListener<Object> {
     protected VB binding;
 
     @Override
@@ -29,7 +34,7 @@ public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActi
     protected void initBar() {
         ImmersionBar.with(this)
                 .hideBar(BarHide.FLAG_HIDE_BAR)
-               /* .statusBarDarkFont(darkFontBar())*/
+                /* .statusBarDarkFont(darkFontBar())*/
                 .init();
     }
 
@@ -72,4 +77,22 @@ public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActi
         // 设置为当前的 Intent，避免 Activity 被杀死后重启 Intent 还是最原先的那个
         setIntent(intent);
     }
+
+    //region 网络
+    @Override
+    public void onHttpStart(@NonNull IRequestApi api) {
+    }
+
+    @Override
+    public void onHttpSuccess(@NonNull Object result) {
+    }
+
+    @Override
+    public void onHttpFail(@NonNull Throwable throwable) {
+    }
+
+    @Override
+    public void onHttpEnd(@NonNull IRequestApi api) {
+    }
+    //endregion
 }

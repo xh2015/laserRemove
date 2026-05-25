@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
+import com.hjq.http.EasyHttp;
+import com.hjq.http.listener.HttpCallbackProxy;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.permission.PermissionLists;
 import com.skydroid.fpvplayer.PlayerType;
@@ -20,6 +22,8 @@ import com.topsky.laserremove.base.BaseActivity;
 import com.topsky.laserremove.constant.CommonData;
 import com.topsky.laserremove.databinding.ActivityMainBinding;
 import com.topsky.laserremove.manager.MP4RecordHelper;
+import com.topsky.laserremove.net.CameraZoomApi;
+import com.topsky.laserremove.net.HttpData;
 import com.topsky.laserremove.utils.LocationUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -47,6 +51,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void initView() {
         binding.btnRecord.setOnClickListener(this);
         binding.btnScreenshot.setOnClickListener(this);
+        binding.btnZoomBig.setOnClickListener(this);
+        binding.btnZoomSmall.setOnClickListener(this);
+        binding.btnZoomStop.setOnClickListener(this);
     }
 
     private void initFPV() {
@@ -75,6 +82,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         } else if (v.getId() == R.id.btn_screenshot) {
             //截图
             takeScreenshot();
+        } else if (v.getId() == R.id.btn_zoom_big) {
+            //放大
+            changeCameraZoom(9);
+        } else if (v.getId() == R.id.btn_zoom_small) {
+            //缩小
+            changeCameraZoom(10);
+        } else if (v.getId() == R.id.btn_zoom_stop) {
+            //停止
+            changeCameraZoom(0);
         }
     }
 
@@ -255,6 +271,20 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     @Override
     public void onLocationSuccess(double longitude, double latitude) {
         LogUtils.i("定位成功：" + longitude + " " + latitude);
+    }
+    //endregion
+
+    //region 云台相机操作
+    private void changeCameraZoom(int type) {
+        EasyHttp.post(this)
+                .api(new CameraZoomApi(type))
+                .request(new HttpCallbackProxy<HttpData<CameraZoomApi.Bean>>(MainActivity.this) {
+
+                    @Override
+                    public void onHttpSuccess(@NonNull HttpData<CameraZoomApi.Bean> result) {
+
+                    }
+                });
     }
     //endregion
 }
