@@ -23,4 +23,11 @@
     <string name="ty_light_times">光学变倍</string>
     <string name="ty_power_percent">功率(%)</string>
     <string name="ty_distance">距离</string>
+    <string name="ty_crosshair_visible">准心</string>
+    <string name="ty_mark_a">标定A</string>
+    <string name="ty_mark_b">标定B</string>
+    <string name="ty_to_a">到点A</string>
+    <string name="ty_to_b">到点B</string>
+    <string name="ty_scan_point">转换</string>
+    <string name="ty_reset">复位</string>
 </resources>
