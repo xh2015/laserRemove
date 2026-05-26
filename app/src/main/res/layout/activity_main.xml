@@ -218,4 +218,94 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_left_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/shape_state_8_bg"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="6dp"
+        app:layout_constraintLeft_toLeftOf="@id/ll_camera_menus_left"
+        app:layout_constraintTop_toBottomOf="@id/ll_top_state_laser_connect">
+
+        <TextView
+            android:id="@+id/tv_light_times"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_info_params_bg"
+            android:gravity="center"
+            android:text="999"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/ty_light_times"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tv_number_times"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/ic_info_params_bg"
+            android:gravity="center"
+            android:text="100"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/ty_number_times"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tv_power_percent"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/ic_info_params_bg"
+            android:gravity="center"
+            android:text="888%"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/ty_power_percent"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tv_distance"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/ic_info_params_bg"
+            android:gravity="center"
+            android:text="666米"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/ty_distance"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

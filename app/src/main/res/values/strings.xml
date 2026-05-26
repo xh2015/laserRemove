@@ -19,4 +19,8 @@
     <string name="ty_laser_title">激光器</string>
     <string name="ty_unconnect">未连接</string>
     <string name="ty_cloud_title">云台</string>
+    <string name="ty_number_times">数字变倍</string>
+    <string name="ty_light_times">光学变倍</string>
+    <string name="ty_power_percent">功率(%)</string>
+    <string name="ty_distance">距离</string>
 </resources>
