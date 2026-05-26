@@ -16,4 +16,7 @@
     <string name="ty_zoom_small">缩小</string>
     <string name="ty_capture_image">拍照</string>
     <string name="ty_capture_video">录像</string>
+    <string name="ty_laser_title">激光器</string>
+    <string name="ty_unconnect">未连接</string>
+    <string name="ty_cloud_title">云台</string>
 </resources>

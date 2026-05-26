@@ -1,6 +1,8 @@
 package com.topsky.laserremove.viewModel;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
@@ -8,6 +10,7 @@ import com.topsky.laserremove.base.BaseViewModel;
 import com.topsky.laserremove.manager.MP4RecordHelper;
 
 import java.nio.ByteBuffer;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -25,6 +28,13 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
         return isRecording;
     }
 
+    // 录像时长（秒）
+    private final MutableLiveData<Integer> recordDuration = new MutableLiveData<>(0);
+
+    public LiveData<Integer> getRecordDuration() {
+        return recordDuration;
+    }
+
     // 是否有有效视频帧（用于判断是否可以录像）
     private final MutableLiveData<Boolean> hasValidFrame = new MutableLiveData<>(false);
 
@@ -34,6 +44,11 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
 
     // 录像管理器
     private MP4RecordHelper mp4RecordHelper;
+
+    // 计时器相关
+    private Handler durationHandler;
+    private Runnable durationRunnable;
+    private int currentDuration = 0;
 
     public RecordViewModel(@NonNull Application application) {
         super(application);
@@ -77,6 +92,7 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
 
         if (ret == null) {
             isRecording.postValue(true);
+            startDurationTimer();
             LogUtils.i("开始录像: " + path);
         } else {
             setErrorMessage("录像失败：" + ret.getMessage());
@@ -88,9 +104,11 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
     public void stopRecord() {
         if (mp4RecordHelper != null) {
             mp4RecordHelper.stop(this);
+        } else {
+            isRecording.postValue(false);
+            stopDurationTimer();
         }
     }
-
 
     //录像完成回调
     @Override
@@ -100,10 +118,45 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
             LogUtils.e("停止录像失败：" + e);
         }
         isRecording.postValue(false);
+        stopDurationTimer();
+        resetDuration();
+    }
+
+    //开始计时
+    private void startDurationTimer() {
+        if (durationHandler == null) {
+            durationHandler = new Handler(Looper.getMainLooper());
+        }
+        currentDuration = 0;
+        recordDuration.postValue(0);
+
+        durationRunnable = new Runnable() {
+            @Override
+            public void run() {
+                currentDuration++;
+                recordDuration.postValue(currentDuration);
+                durationHandler.postDelayed(this, 1000);
+            }
+        };
+        durationHandler.post(durationRunnable);
+    }
+
+    //停止计时
+    private void stopDurationTimer() {
+        if (durationHandler != null && durationRunnable != null) {
+            durationHandler.removeCallbacks(durationRunnable);
+        }
+    }
+
+    //重置计时
+    private void resetDuration() {
+        currentDuration = 0;
+        recordDuration.postValue(0);
     }
 
     //清理资源
     public void cleanup() {
+        stopDurationTimer();
         if (Boolean.TRUE.equals(isRecording.getValue()) && mp4RecordHelper != null) {
             mp4RecordHelper.stop(null);
         }
@@ -119,5 +172,13 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
         super.onCleared();
         cleanup();
         LogUtils.i("RecordViewModel 已清理");
+    }
+
+    //格式化时间为 HH:MM:SS
+    public static String formatDuration(int seconds) {
+        int hours = seconds / 3600;
+        int minutes = (seconds % 3600) / 60;
+        int secs = seconds % 60;
+        return String.format(Locale.CHINA, "%02d:%02d:%02d", hours, minutes, secs);
     }
 }

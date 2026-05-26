@@ -146,6 +146,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         // 观察录像状态
         recordViewModel.getIsRecording().observe(this, isRecording -> {
             binding.btnRecord.setSelected(isRecording);
+            //binding.llTopStateRecord.setVisibility(isRecording ? View.VISIBLE : View.GONE);
         });
 
         // 观察录像错误消息
@@ -153,6 +154,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             }
+        });
+
+        // 观察录像时长
+        recordViewModel.getRecordDuration().observe(this, duration -> {
+            String formattedTime = RecordViewModel.formatDuration(duration);
+            binding.tvRecordTime.setText(formattedTime);
         });
 
         // 观察截图消息

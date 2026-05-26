@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="TRANSPARENT">#00000000</color>
     <color name="black">#FF000000</color>
+    <color name="black_a10">#19000000</color>
+    <color name="black_a20">#33000000</color>
+    <color name="black_a30">#4c000000</color>
+    <color name="black_a40">#66000000</color>
+    <color name="black_a50">#7f000000</color>
+    <color name="black_a60">#99000000</color>
+    <color name="black_a70">#b2000000</color>
+    <color name="black_a80">#cc000000</color>
+    <color name="black_a90">#e6000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_a10">#19ffffff</color>
+    <color name="white_a20">#33ffffff</color>
+    <color name="white_a30">#4cffffff</color>
+    <color name="white_a40">#66ffffff</color>
+    <color name="white_a50">#7fffffff</color>
+    <color name="white_a60">#99ffffff</color>
+    <color name="white_a70">#b2ffffff</color>
+    <color name="white_a80">#ccffffff</color>
+    <color name="white_a90">#e6ffffff</color>
+    <color name="color_line">#ff666666</color>
 </resources>

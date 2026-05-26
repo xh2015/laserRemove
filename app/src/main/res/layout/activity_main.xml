@@ -17,6 +17,11 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#444" />
+
     <LinearLayout
         android:id="@+id/ll_camera_menus_left"
         android:layout_width="wrap_content"
@@ -103,6 +108,113 @@
                 style="@style/styleCameraMenuTv"
                 android:text="@string/ty_capture_video" />
         </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_top_state_laser_connect"
+        style="@style/styleTopStateLl"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toLeftOf="@id/ll_camera_menus_left"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            style="@style/styleTopStateTv"
+            android:text="@string/ty_laser_title" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="16dp"
+            android:layout_marginHorizontal="6dp"
+            android:background="@color/color_line" />
+
+        <TextView
+            android:id="@+id/tv_laser_connect_state"
+            style="@style/styleTopStateTv"
+            android:text="@string/ty_unconnect" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_top_state_cloud_connect"
+        style="@style/styleTopStateLl"
+        app:layout_constraintLeft_toRightOf="@id/ll_top_state_laser_connect"
+        app:layout_constraintTop_toTopOf="@id/ll_top_state_laser_connect">
+
+        <TextView
+            style="@style/styleTopStateTv"
+            android:text="@string/ty_cloud_title" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="16dp"
+            android:layout_marginHorizontal="6dp"
+            android:background="@color/color_line" />
+
+        <TextView
+            android:id="@+id/tv_cloud_connect_state"
+            style="@style/styleTopStateTv"
+            android:text="@string/ty_unconnect" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_top_state_focal_length"
+        style="@style/styleTopStateLl"
+        app:layout_constraintLeft_toRightOf="@id/ll_top_state_cloud_connect"
+        app:layout_constraintTop_toTopOf="@id/ll_top_state_cloud_connect">
+
+        <TextView
+            android:id="@+id/tv_focal_length"
+            style="@style/styleTopStateTv"
+            android:text="焦距：400000" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_top_state_center_xy"
+        style="@style/styleTopStateLl"
+        app:layout_constraintLeft_toRightOf="@id/ll_top_state_focal_length"
+        app:layout_constraintTop_toTopOf="@id/ll_top_state_focal_length">
+
+        <TextView
+            android:id="@+id/tv_center_xy"
+            style="@style/styleTopStateTv"
+            android:text="准心坐标 X：224  Y：235" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_top_state_light_zoom"
+        style="@style/styleTopStateLl"
+        app:layout_constraintLeft_toRightOf="@id/ll_top_state_center_xy"
+        app:layout_constraintTop_toTopOf="@id/ll_top_state_center_xy">
+
+        <TextView
+            android:id="@+id/tv_light_zoom"
+            style="@style/styleTopStateTv"
+            android:text="光学变倍: 100.0倍" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_top_state_record"
+        style="@style/styleTopStateLl"
+        app:layout_constraintLeft_toRightOf="@id/ll_top_state_light_zoom"
+        app:layout_constraintTop_toTopOf="@id/ll_top_state_light_zoom">
+
+        <ImageView
+            android:id="@+id/iv_recording"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/ic_capture_video_recoding" />
+
+        <TextView
+            android:id="@+id/tv_record_time"
+            style="@style/styleTopStateTv"
+            android:layout_marginLeft="4dp"
+            android:text="00:00:00" />
 
     </LinearLayout>
 
