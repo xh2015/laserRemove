@@ -146,7 +146,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         // 观察录像状态
         recordViewModel.getIsRecording().observe(this, isRecording -> {
             binding.btnRecord.setSelected(isRecording);
-            //binding.llTopStateRecord.setVisibility(isRecording ? View.VISIBLE : View.GONE);
+            binding.llTopStateRecord.setVisibility(isRecording ? View.VISIBLE : View.GONE);
         });
 
         // 观察录像错误消息

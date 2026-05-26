@@ -89,10 +89,10 @@ public class ScreenshotViewModel extends BaseViewModel {
                     byte[] jpegData = baos.toByteArray();
 
                     File file = new File(screenshotPath);
-                    FileOutputStream fos = new FileOutputStream(file);
-                    fos.write(jpegData);
-                    fos.flush();
-                    fos.close();
+                    try (FileOutputStream fos = new FileOutputStream(file)) {
+                        fos.write(jpegData);
+                        fos.flush();
+                    }
 
                     screenshotMessage.postValue("截图已保存: " + file.getName());
                     LogUtils.i("截图成功: " + screenshotPath);

@@ -137,16 +137,36 @@ public class MP4RecordHelper {
                 super.run();
                 try {
                     if (h264FileOutputStream != null){
-                        h264FileOutputStream.flush();
-                        h264FileOutputStream.close();
+                        try {
+                            h264FileOutputStream.flush();
+                            h264FileOutputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    H264TrackImpl h264Track = new H264TrackImpl(new FileDataSourceImpl(h264Path));
-                    Movie movie = new Movie();
-                    movie.addTrack(h264Track);
-                    Container mp4file = new DefaultMp4Builder().build(movie);
-                    FileChannel fc = new FileOutputStream(new File(h264Path.substring(0,h264Path.length() - tempSuffix.length()))).getChannel();
-                    mp4file.writeContainer(fc);
-                    fc.close();
+
+                    FileDataSourceImpl dataSource = null;
+                    try {
+                        dataSource = new FileDataSourceImpl(h264Path);
+                        H264TrackImpl h264Track = new H264TrackImpl(dataSource);
+                        Movie movie = new Movie();
+                        movie.addTrack(h264Track);
+                        Container mp4file = new DefaultMp4Builder().build(movie);
+
+                        String mp4Path = h264Path.substring(0, h264Path.length() - tempSuffix.length());
+                        try (FileChannel fc = new FileOutputStream(new File(mp4Path)).getChannel()) {
+                            mp4file.writeContainer(fc);
+                        }
+                    } finally {
+                        if (dataSource != null) {
+                            try {
+                                dataSource.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
                     boolean delRet = new File(h264Path).delete();
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
@@ -169,7 +189,6 @@ public class MP4RecordHelper {
 
             }
         }.start();
-
     }
 
     public void putYUV(ByteBuffer directBuffer, int width, int height, int pixel_format){

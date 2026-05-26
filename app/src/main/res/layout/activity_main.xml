@@ -17,10 +17,10 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+    <!--<View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#444" />
+        android:background="#444" />-->
 
     <LinearLayout
         android:id="@+id/ll_camera_menus_left"
