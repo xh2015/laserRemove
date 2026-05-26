@@ -1,58 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:background="@color/black"
     tools:context=".ui.MainActivity">
 
     <com.skydroid.fpvplayer.FPVWidget
         android:id="@+id/fpvWidget"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/ll_camera_menus_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="12dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_zoom_stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="停止" />
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
 
         <Button
             android:id="@+id/btn_zoom_big"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="放大" />
+            style="@style/styleCameraMenuBtn"
+            android:background="@drawable/selector_zoom_big" />
 
-        <Button
-            android:id="@+id/btn_zoom_small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="缩小" />
-
-        <Button
-            android:id="@+id/btn_screenshot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="截图" />
-
-        <Button
-            android:id="@+id/btn_record"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="开始录像" />
+        <TextView
+            style="@style/styleCameraMenuTv"
+            android:text="@string/ty_zoom_big" />
 
     </LinearLayout>
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/ll_camera_menus_right"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="15dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@id/ll_camera_menus_left"
+        app:layout_constraintLeft_toRightOf="@id/ll_camera_menus_left"
+        app:layout_constraintTop_toTopOf="@id/ll_camera_menus_left">
+
+        <Button
+            android:id="@+id/btn_zoom_small"
+            style="@style/styleCameraMenuBtn"
+            android:background="@drawable/selector_zoom_small" />
+
+        <TextView
+            style="@style/styleCameraMenuTv"
+            android:text="@string/ty_zoom_small" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_bottom_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="42dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/ll_camera_menus_left"
+        app:layout_constraintLeft_toRightOf="@id/ll_camera_menus_right">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_screenshot"
+                style="@style/styleCameraMenuBtn"
+                android:background="@drawable/selector_capture_image" />
+
+            <TextView
+                style="@style/styleCameraMenuTv"
+                android:text="@string/ty_capture_image" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btn_record"
+                style="@style/styleCameraMenuBtn"
+                android:background="@drawable/selector_capture_video" />
+
+            <TextView
+                style="@style/styleCameraMenuTv"
+                android:text="@string/ty_capture_video" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

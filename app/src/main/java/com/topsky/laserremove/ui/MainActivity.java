@@ -5,6 +5,7 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -51,9 +52,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void initView() {
         binding.btnRecord.setOnClickListener(this);
         binding.btnScreenshot.setOnClickListener(this);
-        binding.btnZoomBig.setOnClickListener(this);
-        binding.btnZoomSmall.setOnClickListener(this);
-        binding.btnZoomStop.setOnClickListener(this);
+        initTouchCustomViewCamera();
     }
 
     private void initFPV() {
@@ -82,15 +81,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         } else if (v.getId() == R.id.btn_screenshot) {
             //截图
             takeScreenshot();
-        } else if (v.getId() == R.id.btn_zoom_big) {
-            //放大
-            changeCameraZoom(9);
-        } else if (v.getId() == R.id.btn_zoom_small) {
-            //缩小
-            changeCameraZoom(10);
-        } else if (v.getId() == R.id.btn_zoom_stop) {
-            //停止
-            changeCameraZoom(0);
         }
     }
 
@@ -275,6 +265,41 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //endregion
 
     //region 云台相机操作
+    @SuppressLint("ClickableViewAccessibility")
+    private void initTouchCustomViewCamera() {
+        binding.btnZoomBig.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        changeCameraZoom(9);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        changeCameraZoom(0);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        binding.btnZoomSmall.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        changeCameraZoom(10);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        changeCameraZoom(0);
+                        break;
+                }
+                return false;
+            }
+        });
+    }
+
     private void changeCameraZoom(int type) {
         EasyHttp.post(this)
                 .api(new CameraZoomApi(type))
