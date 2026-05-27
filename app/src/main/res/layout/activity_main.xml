@@ -17,10 +17,10 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--<View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#444" />-->
+    <View
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:background="#444" />
 
     <LinearLayout
         android:id="@+id/ll_camera_menus_left"
@@ -32,6 +32,25 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent">
+
+        <Button
+            android:id="@+id/btn_crosshair_setting"
+            style="@style/styleCameraMenuBtn"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/selector_crosshair_setting" />
+
+        <TextView
+            style="@style/styleCameraMenuTv"
+            android:text="@string/ty_crosshair_setting" />
+
+        <Button
+            android:id="@+id/btn_focus_near"
+            style="@style/styleCameraMenuBtn"
+            android:background="@drawable/selector_focus_near" />
+
+        <TextView
+            style="@style/styleCameraMenuTv"
+            android:text="@string/ty_focus_near" />
 
         <Button
             android:id="@+id/btn_zoom_big"
@@ -54,6 +73,25 @@
         app:layout_constraintBottom_toBottomOf="@id/ll_camera_menus_left"
         app:layout_constraintLeft_toRightOf="@id/ll_camera_menus_left"
         app:layout_constraintTop_toTopOf="@id/ll_camera_menus_left">
+
+        <Button
+            android:id="@+id/btn_pulse_setting"
+            style="@style/styleCameraMenuBtn"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/selector_pulse_setting" />
+
+        <TextView
+            style="@style/styleCameraMenuTv"
+            android:text="@string/ty_pulse_setting" />
+
+        <Button
+            android:id="@+id/btn_focus_far"
+            style="@style/styleCameraMenuBtn"
+            android:background="@drawable/selector_focus_far" />
+
+        <TextView
+            style="@style/styleCameraMenuTv"
+            android:text="@string/ty_focus_far" />
 
         <Button
             android:id="@+id/btn_zoom_small"
@@ -282,6 +320,7 @@
     <LinearLayout
         android:id="@+id/ll_top_state_focal_length"
         style="@style/styleTopStateLl"
+        android:visibility="gone"
         app:layout_constraintLeft_toRightOf="@id/ll_top_state_cloud_connect"
         app:layout_constraintTop_toTopOf="@id/ll_top_state_cloud_connect">
 
@@ -308,6 +347,7 @@
     <LinearLayout
         android:id="@+id/ll_top_state_light_zoom"
         style="@style/styleTopStateLl"
+        android:visibility="gone"
         app:layout_constraintLeft_toRightOf="@id/ll_top_state_center_xy"
         app:layout_constraintTop_toTopOf="@id/ll_top_state_center_xy">
 
@@ -342,7 +382,7 @@
         android:id="@+id/ll_left_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="18dp"
         android:background="@drawable/shape_state_8_bg"
         android:gravity="center_horizontal"
         android:orientation="vertical"
@@ -378,7 +418,8 @@
             android:gravity="center"
             android:text="100"
             android:textColor="@color/white"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:visibility="gone" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -386,7 +427,8 @@
             android:layout_marginTop="2dp"
             android:text="@string/ty_number_times"
             android:textColor="@color/white"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_power_percent"

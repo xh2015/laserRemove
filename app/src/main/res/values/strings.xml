@@ -12,6 +12,10 @@
     <string name="http_response_null_body">服务器数据返回异常，请稍后再试</string>
     <string name="http_response_md5_error">文件 md5 校验失败</string>
 
+    <string name="ty_crosshair_setting">准心设置</string>
+    <string name="ty_pulse_setting">脉冲设置</string>
+    <string name="ty_focus_near">近焦</string>
+    <string name="ty_focus_far">远焦</string>
     <string name="ty_zoom_big">放大</string>
     <string name="ty_zoom_small">缩小</string>
     <string name="ty_capture_image">拍照</string>
