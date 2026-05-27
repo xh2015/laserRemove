@@ -67,6 +67,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
         binding.tvPowerPercent.setOnClickListener(this);
         binding.tvDistance.setOnClickListener(this);
+        binding.btnPulseSetting.setOnClickListener(this);
 
         initTouchCustomViewCamera();
     }
@@ -106,6 +107,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             settingPowerPercent();
         } else if (v.getId() == R.id.tv_distance) {
             settingLaserDistance();
+        } else if (v.getId() == R.id.btn_pulse_setting) {
+            settingLaserPulse();
         }
     }
     //endregion
@@ -298,6 +301,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         laserControlViewModel.getLaserDistance().observe(this, distance -> {
             binding.tvDistance.setText(String.format(getString(R.string.ty_distance_format), distance));
         });
+
+        //脉冲
+        laserControlViewModel.getLaserPulse().observe(this, pulse -> {
+
+        });
     }
 
     //设置激光功率
@@ -321,7 +329,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         });
     }
 
-    //设置
+    //设置距离
     private void settingLaserDistance() {
         showSettingPop(10, 9999, 4, getString(R.string.ty_distance_setting_title), R.string.ty_distance_input_tip, input -> {
             if (input == null || input.isEmpty()) {
@@ -336,6 +344,27 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     return;
                 }
                 laserControlViewModel.setLaserDistance(value);
+            } catch (NumberFormatException e) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    //设置脉冲
+    private void settingLaserPulse() {
+        showSettingPop(10, 9999, 4, getString(R.string.ty_pulse_setting), R.string.ty_distance_input_tip, input -> {
+            if (input == null || input.isEmpty()) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                int value = Integer.parseInt(input);
+                if (value < 10 || value > 9999) {
+                    Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                laserControlViewModel.setLaserPulse(value);
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
             }

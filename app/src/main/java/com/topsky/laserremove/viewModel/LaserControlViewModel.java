@@ -30,6 +30,13 @@ public class LaserControlViewModel extends BaseViewModel {
         return laserDistance;
     }
 
+    //脉冲
+    private final MutableLiveData<Integer> laserPulse = new MutableLiveData<>(10);
+
+    public LiveData<Integer> getLaserPulse() {
+        return laserPulse;
+    }
+
     public void setLaserConnectStatus(boolean isConnected) {
         laserConnectStatus.postValue(isConnected);
     }
@@ -46,4 +53,7 @@ public class LaserControlViewModel extends BaseViewModel {
         laserDistance.postValue(distance);
     }
 
+    public void setLaserPulse(int pulse) {
+        laserPulse.postValue(pulse);
+    }
 }
