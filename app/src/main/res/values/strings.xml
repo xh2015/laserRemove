@@ -35,8 +35,11 @@
     <string name="ty_to_b">到点B</string>
     <string name="ty_scan_point">转换</string>
     <string name="ty_reset">复位</string>
-    <string name="ty_power_input_tip">请输入10~100之间的整数</string>
     <string name="ty_power_setting_title">功率设置</string>
+    <string name="ty_power_input_tip">请输入10~100之间的整数</string>
     <string name="ty_power_input_empty_tip">请输入有效数值</string>
     <string name="ty_power_input_error_tip">请输入有效的整数</string>
+    <string name="ty_distance_setting_title">距离设置</string>
+    <string name="ty_distance_input_tip">请输入10~9999之间的整数</string>
+    <string name="ty_distance_format">%s米</string>
 </resources>

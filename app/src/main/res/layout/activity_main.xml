@@ -456,7 +456,7 @@
             android:layout_marginTop="4dp"
             android:background="@drawable/ic_info_params_bg"
             android:gravity="center"
-            android:text="666米"
+            android:text="10米"
             android:textColor="@color/white"
             android:textSize="10sp" />
 

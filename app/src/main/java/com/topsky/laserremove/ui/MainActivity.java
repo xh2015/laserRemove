@@ -1,13 +1,10 @@
 package com.topsky.laserremove.ui;
 
 import android.annotation.SuppressLint;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ColorUtils;
@@ -15,9 +12,8 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.permission.PermissionLists;
 import com.lxj.xpopup.XPopup;
-import com.lxj.xpopup.core.BasePopupView;
 import com.lxj.xpopup.impl.InputConfirmPopupView;
-import com.lxj.xpopup.interfaces.SimpleCallback;
+import com.lxj.xpopup.interfaces.OnInputConfirmListener;
 import com.skydroid.fpvplayer.PlayerType;
 import com.skydroid.fpvplayer.RtspTransport;
 import com.skydroid.fpvplayer.VideoDecoderCallBack;
@@ -25,17 +21,18 @@ import com.topsky.laserremove.R;
 import com.topsky.laserremove.base.BaseActivity;
 import com.topsky.laserremove.constant.CommonData;
 import com.topsky.laserremove.databinding.ActivityMainBinding;
+import com.topsky.laserremove.filter.TyPopCallBack;
 import com.topsky.laserremove.viewModel.CameraViewModel;
 import com.topsky.laserremove.viewModel.CloudPlatformViewModel;
 import com.topsky.laserremove.viewModel.LaserControlViewModel;
 import com.topsky.laserremove.viewModel.RecordViewModel;
 import com.topsky.laserremove.viewModel.ScreenshotViewModel;
 import com.topsky.laserremove.widget.PanelView;
-import com.topsky.laserremove.widget.PowerFilter;
 
 import java.nio.ByteBuffer;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, VideoDecoderCallBack, PanelView.PanelListener {
@@ -70,6 +67,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.exMenu.setPanelListener(this);
 
         binding.tvPowerPercent.setOnClickListener(this);
+        binding.tvDistance.setOnClickListener(this);
 
         initTouchCustomViewCamera();
     }
@@ -107,6 +105,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             moveToPoint(false);
         } else if (v.getId() == R.id.tv_power_percent) {
             settingPowerPercent();
+        } else if (v.getId() == R.id.tv_distance) {
+            settingLaserDistance();
         }
     }
     //endregion
@@ -291,43 +291,53 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //设置激光功率
     private void settingPowerPercent() {
+        showSettingPop(10, 100, 3, getString(R.string.ty_power_setting_title), R.string.ty_power_input_tip, input -> {
+            if (input == null || input.isEmpty()) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                int value = Integer.parseInt(input);
+                if (value < 10 || value > 100) {
+                    Toast.makeText(MainActivity.this, R.string.ty_power_input_tip, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                binding.tvPowerPercent.setText(input + "%");
+            } catch (NumberFormatException e) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    //设置
+    private void settingLaserDistance() {
+        showSettingPop(10, 9999, 4, getString(R.string.ty_distance_setting_title), R.string.ty_distance_input_tip, input -> {
+            if (input == null || input.isEmpty()) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                int value = Integer.parseInt(input);
+                if (value < 10 || value > 9999) {
+                    Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                binding.tvDistance.setText(String.format(getString(R.string.ty_distance_format), input));
+            } catch (NumberFormatException e) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showSettingPop(int minValue, int maxValue, int maxLength, String title, @StringRes int inputTip, OnInputConfirmListener confirmListener) {
         InputConfirmPopupView inputConfirm = new XPopup.Builder(this)
                 .hasStatusBar(false)
                 .hasNavigationBar(false)
                 .popupWidth(SizeUtils.dp2px(400))
-                .setPopupCallback(new SimpleCallback() {
-                    @Override
-                    public void onCreated(BasePopupView popupView) {
-                        super.onCreated(popupView);
-                        if (popupView instanceof InputConfirmPopupView) {
-                            EditText editText = ((InputConfirmPopupView) popupView).getEditText();
-                            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                            editText.setHint(R.string.ty_power_input_tip);
-                            editText.setFilters(new InputFilter[]{
-                                    new InputFilter.LengthFilter(3),
-                                    new PowerFilter()
-                            });
-                        }
-                    }
-                })
-                .asInputConfirm(getResources().getString(R.string.ty_power_setting_title), "",
-                        text -> {
-                            if (text == null || text.isEmpty()) {
-                                Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            try {
-                                int value = Integer.parseInt(text);
-                                if (value < 10 || value > 100) {
-                                    Toast.makeText(MainActivity.this, R.string.ty_power_input_tip, Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-                                binding.tvPowerPercent.setText(text + "%");
-                            } catch (NumberFormatException e) {
-                                Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                .setPopupCallback(new TyPopCallBack(minValue, maxValue, maxLength, inputTip))
+                .asInputConfirm(title, "", confirmListener);
 
         inputConfirm.show();
     }
