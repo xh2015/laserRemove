@@ -16,12 +16,34 @@ public class LaserControlViewModel extends BaseViewModel {
         return laserConnectStatus;
     }
 
+    //功率
+    private final MutableLiveData<Integer> laserPower = new MutableLiveData<>(10);
+
+    public LiveData<Integer> getLaserPower() {
+        return laserPower;
+    }
+
+    //距离
+    private final MutableLiveData<Integer> laserDistance = new MutableLiveData<>(10);
+
+    public LiveData<Integer> getLaserDistance() {
+        return laserDistance;
+    }
+
     public void setLaserConnectStatus(boolean isConnected) {
         laserConnectStatus.postValue(isConnected);
     }
 
     public LaserControlViewModel(@NonNull Application application) {
         super(application);
+    }
+
+    public void setLaserPower(int power) {
+        laserPower.postValue(power);
+    }
+
+    public void setLaserDistance(int distance) {
+        laserDistance.postValue(distance);
     }
 
 }

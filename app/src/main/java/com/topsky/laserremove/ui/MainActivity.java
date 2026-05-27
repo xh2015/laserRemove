@@ -12,7 +12,6 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.permission.PermissionLists;
 import com.lxj.xpopup.XPopup;
-import com.lxj.xpopup.impl.InputConfirmPopupView;
 import com.lxj.xpopup.interfaces.OnInputConfirmListener;
 import com.skydroid.fpvplayer.PlayerType;
 import com.skydroid.fpvplayer.RtspTransport;
@@ -128,6 +127,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void setupObservers() {
         //录像 拍照
         setupCaptureVideoImageObservers();
+        //相机
+        setupCameraObservers();
         //云台
         setupCloudPlatformObservers();
         //激光器
@@ -287,6 +288,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             binding.tvLaserConnectState.setText(isConnected ? R.string.ty_connected : R.string.ty_unconnect);
             binding.tvLaserConnectState.setTextColor(ColorUtils.getColor(isConnected ? R.color.color_connected : R.color.color_unconnect));
         });
+
+        //激光功率
+        laserControlViewModel.getLaserPower().observe(this, power -> {
+            binding.tvPowerPercent.setText(power + "%");
+        });
+
+        //激光距离
+        laserControlViewModel.getLaserDistance().observe(this, distance -> {
+            binding.tvDistance.setText(String.format(getString(R.string.ty_distance_format), distance));
+        });
     }
 
     //设置激光功率
@@ -303,7 +314,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     Toast.makeText(MainActivity.this, R.string.ty_power_input_tip, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                binding.tvPowerPercent.setText(input + "%");
+                laserControlViewModel.setLaserPower(value);
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
             }
@@ -324,7 +335,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                binding.tvDistance.setText(String.format(getString(R.string.ty_distance_format), input));
+                laserControlViewModel.setLaserDistance(value);
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
             }
@@ -332,14 +343,21 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     private void showSettingPop(int minValue, int maxValue, int maxLength, String title, @StringRes int inputTip, OnInputConfirmListener confirmListener) {
-        InputConfirmPopupView inputConfirm = new XPopup.Builder(this)
+        new XPopup.Builder(this)
                 .hasStatusBar(false)
                 .hasNavigationBar(false)
                 .popupWidth(SizeUtils.dp2px(400))
                 .setPopupCallback(new TyPopCallBack(minValue, maxValue, maxLength, inputTip))
-                .asInputConfirm(title, "", confirmListener);
+                .asInputConfirm(title, "", confirmListener)
+                .show();
+    }
+    //endregion
 
-        inputConfirm.show();
+    //region 相机
+    private void setupCameraObservers() {
+        cameraViewModel.getCameraZoom().observe(this, zoom -> {
+            binding.tvLightTimes.setText(String.valueOf(zoom));
+        });
     }
     //endregion
 

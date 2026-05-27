@@ -10,12 +10,20 @@ import com.topsky.laserremove.net.CameraZoomApi;
 import com.topsky.laserremove.net.HttpData;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 /**
  * 相机控制 ViewModel
  * 负责相机相关的所有业务逻辑（变焦、对焦等）
  */
 public class CameraViewModel extends BaseViewModel {
+    //光学变倍
+    private final MutableLiveData<Integer> cameraZoom = new MutableLiveData<>(10);
+
+    public LiveData<Integer> getCameraZoom() {
+        return cameraZoom;
+    }
 
     public CameraViewModel(@NonNull Application application) {
         super(application);

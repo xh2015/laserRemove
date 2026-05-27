@@ -397,7 +397,7 @@
             android:layout_height="40dp"
             android:background="@drawable/ic_info_params_bg"
             android:gravity="center"
-            android:text="999"
+            tools:text="999"
             android:textColor="@color/white"
             android:textSize="10sp" />
 
@@ -437,7 +437,7 @@
             android:layout_marginTop="4dp"
             android:background="@drawable/ic_info_params_bg"
             android:gravity="center"
-            android:text="10%"
+            tools:text="10%"
             android:textColor="@color/white"
             android:textSize="10sp" />
 
@@ -456,7 +456,7 @@
             android:layout_marginTop="4dp"
             android:background="@drawable/ic_info_params_bg"
             android:gravity="center"
-            android:text="10米"
+            tools:text="10米"
             android:textColor="@color/white"
             android:textSize="10sp" />
 
