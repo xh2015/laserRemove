@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.ColorUtils;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.permission.PermissionLists;
 import com.skydroid.fpvplayer.PlayerType;
@@ -17,19 +18,24 @@ import com.topsky.laserremove.base.BaseActivity;
 import com.topsky.laserremove.constant.CommonData;
 import com.topsky.laserremove.databinding.ActivityMainBinding;
 import com.topsky.laserremove.viewModel.CameraViewModel;
+import com.topsky.laserremove.viewModel.CloudPlatformViewModel;
+import com.topsky.laserremove.viewModel.LaserControlViewModel;
 import com.topsky.laserremove.viewModel.RecordViewModel;
 import com.topsky.laserremove.viewModel.ScreenshotViewModel;
+import com.topsky.laserremove.widget.PanelView;
 
 import java.nio.ByteBuffer;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, VideoDecoderCallBack {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, VideoDecoderCallBack, PanelView.PanelListener {
 
     private RecordViewModel recordViewModel;
     private ScreenshotViewModel screenshotViewModel;
     private CameraViewModel cameraViewModel;
+    private CloudPlatformViewModel cloudPlatformViewModel;
+    private LaserControlViewModel laserControlViewModel;
 
     @Override
     protected ActivityMainBinding initViewBinding(LayoutInflater inflater) {
@@ -47,6 +53,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void initView() {
         binding.btnRecord.setOnClickListener(this);
         binding.btnScreenshot.setOnClickListener(this);
+
+        binding.btnMarkA.setOnClickListener(this);
+        binding.btnMarkB.setOnClickListener(this);
+        binding.btnToA.setOnClickListener(this);
+        binding.btnToB.setOnClickListener(this);
+
+        binding.exMenu.setPanelListener(this);
+
         initTouchCustomViewCamera();
     }
 
@@ -73,6 +87,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             handleRecordClick();
         } else if (v.getId() == R.id.btn_screenshot) {
             checkPermissionAndCaptureImage();
+        } else if (v.getId() == R.id.btn_mark_a) {
+            markPoint(true);
+        } else if (v.getId() == R.id.btn_mark_b) {
+            markPoint(false);
+        }else if (v.getId() == R.id.btn_to_a) {
+            moveToPoint(true);
+        } else if (v.getId() == R.id.btn_to_b) {
+            moveToPoint(false);
         }
     }
     //endregion
@@ -83,6 +105,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         recordViewModel = new ViewModelProvider(this).get(RecordViewModel.class);
         screenshotViewModel = new ViewModelProvider(this).get(ScreenshotViewModel.class);
         cameraViewModel = new ViewModelProvider(this).get(CameraViewModel.class);
+        cloudPlatformViewModel = new ViewModelProvider(this).get(CloudPlatformViewModel.class);
+        laserControlViewModel = new ViewModelProvider(this).get(LaserControlViewModel.class);
 
         cameraViewModel.setLifecycleOwner(this);
         setupObservers();
@@ -92,6 +116,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void setupObservers() {
         //录像 拍照
         setupCaptureVideoImageObservers();
+        //云台
+        setupCloudPlatformObservers();
+        //激光器
+        setupLaserControlObservers();
     }
     //endregion
 
@@ -211,6 +239,41 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 }
                 return false;
             }
+        });
+    }
+    //endregion
+
+    //region 云平台
+    //标定A
+    private void markPoint(boolean pointA) {
+        cloudPlatformViewModel.setCpConnectStatus(pointA);
+    }
+
+    private void moveToPoint(boolean toA) {
+        laserControlViewModel.setLaserConnectStatus(toA);
+    }
+
+    //云台方向控制
+    @Override
+    public void onStatesChange(int direction, boolean isPress) {
+        cloudPlatformViewModel.controlCpDirection(direction, isPress);
+    }
+
+    private void setupCloudPlatformObservers() {
+        //观察云平台连接状态
+        cloudPlatformViewModel.getCpConnectStatus().observe(this, isConnected -> {
+            binding.tvCloudConnectState.setText(isConnected ? R.string.ty_connected : R.string.ty_unconnect);
+            binding.tvCloudConnectState.setTextColor(ColorUtils.getColor(isConnected ? R.color.color_connected : R.color.color_unconnect));
+        });
+    }
+    //endregion
+
+    // 激光器控制
+    private void setupLaserControlObservers() {
+        //观察云平台连接状态
+        laserControlViewModel.getLaserConnectStatus().observe(this, isConnected -> {
+            binding.tvLaserConnectState.setText(isConnected ? R.string.ty_connected : R.string.ty_unconnect);
+            binding.tvLaserConnectState.setTextColor(ColorUtils.getColor(isConnected ? R.color.color_connected : R.color.color_unconnect));
         });
     }
     //endregion

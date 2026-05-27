@@ -18,9 +18,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:background="#444" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#444" />
 
     <LinearLayout
         android:id="@+id/ll_camera_menus_left"
@@ -469,5 +469,14 @@
             android:textSize="10sp" />
 
     </LinearLayout>
+
+    <com.topsky.laserremove.widget.PanelView
+        android:id="@+id/ex_menu"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintBottom_toBottomOf="@id/ll_camera_menus_left"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
