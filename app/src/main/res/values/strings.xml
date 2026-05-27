@@ -42,4 +42,9 @@
     <string name="ty_distance_setting_title">距离设置</string>
     <string name="ty_distance_input_tip">请输入10~9999之间的整数</string>
     <string name="ty_distance_format">%s米</string>
+    <string name="ty_crosshair_coordinate">准心坐标 X：%d  Y：%d</string>
+    <string name="ty_up">上</string>
+    <string name="ty_down">下</string>
+    <string name="ty_left">左</string>
+    <string name="ty_right">右</string>
 </resources>

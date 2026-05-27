@@ -5,9 +5,12 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ColorUtils;
+import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.permission.PermissionLists;
@@ -29,6 +32,7 @@ import com.topsky.laserremove.viewModel.ScreenshotViewModel;
 import com.topsky.laserremove.widget.PanelView;
 
 import java.nio.ByteBuffer;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -70,6 +74,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.btnPulseSetting.setOnClickListener(this);
 
         initTouchCustomViewCamera();
+        initCrosshair();
     }
 
     private void initFPV() {
@@ -109,6 +114,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             settingLaserDistance();
         } else if (v.getId() == R.id.btn_pulse_setting) {
             settingLaserPulse();
+        } else if (v.getId() == R.id.btn_up) {
+            updateCrossHair(0);
+        } else if (v.getId() == R.id.btn_down) {
+            updateCrossHair(1);
+        } else if (v.getId() == R.id.btn_left) {
+            updateCrossHair(2);
+        } else if (v.getId() == R.id.btn_right) {
+            updateCrossHair(3);
+        } else if (v.getId() == R.id.btn_cancel) {
+            defaultCrosshairCoordinate(currentCrosshairX, currentCrosshairY);
+        } else if (v.getId() == R.id.btn_confirm) {
+            setCrossHairCoordinate(tempCrosshairX, tempCrosshairY);
         }
     }
     //endregion
@@ -259,7 +276,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
     //endregion
 
-    //region 云平台
+    //region 云台
     //标定A
     private void markPoint(boolean pointA) {
         cloudPlatformViewModel.setCpConnectStatus(pointA);
@@ -387,6 +404,104 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         cameraViewModel.getCameraZoom().observe(this, zoom -> {
             binding.tvLightTimes.setText(String.valueOf(zoom));
         });
+    }
+    //endregion
+
+    //region 准心设置
+    private int stepPx = 5;
+    private int screenWidth;
+    private int screenHeight;
+    private int currentCrosshairX;
+    private int currentCrosshairY;
+    private int tempCrosshairX;
+    private int tempCrosshairY;
+    private int crosshairSize;
+
+    private void initCrosshair() {
+        binding.btnCrosshairVisible.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                binding.ivCrosshair.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            }
+        });
+        binding.btnCrosshairVisible.setChecked(true);
+
+        binding.btnCrosshairSetting.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked) {
+                    defaultCrosshairCoordinate(currentCrosshairX, currentCrosshairY);
+                }
+                binding.btnUp.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                binding.btnDown.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                binding.btnLeft.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                binding.btnRight.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                binding.btnCancel.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                binding.btnConfirm.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        binding.btnUp.setOnClickListener(this);
+        binding.btnDown.setOnClickListener(this);
+        binding.btnLeft.setOnClickListener(this);
+        binding.btnRight.setOnClickListener(this);
+        binding.btnCancel.setOnClickListener(this);
+        binding.btnConfirm.setOnClickListener(this);
+
+        screenWidth = ScreenUtils.getScreenWidth();
+        screenHeight = ScreenUtils.getScreenHeight();
+
+        binding.ivCrosshair.post(() -> {
+            crosshairSize = binding.ivCrosshair.getWidth();
+            currentCrosshairX = (screenWidth - crosshairSize) / 2;
+            currentCrosshairY = (screenHeight - crosshairSize) / 2;
+            defaultCrosshairCoordinate(currentCrosshairX, currentCrosshairY);
+        });
+    }
+
+    //0 上 1 下 2 左 3 右
+    private void updateCrossHair(int direction) {
+        if (direction == 0) {
+            tempCrosshairY -= stepPx;
+        } else if (direction == 1) {
+            tempCrosshairY += stepPx;
+        } else if (direction == 2) {
+            tempCrosshairX -= stepPx;
+        } else if (direction == 3) {
+            tempCrosshairX += stepPx;
+        }
+
+        updateCrossHairCoordinate(tempCrosshairX, tempCrosshairY);
+    }
+
+    private void defaultCrosshairCoordinate(int currentCrosshairX, int currentCrosshairY) {
+        updateCrossHairCoordinate(currentCrosshairX, currentCrosshairY);
+    }
+
+    private void updateCrossHairCoordinate(int x, int y) {
+        if (x < 0 || x > screenWidth - crosshairSize) {
+            return;
+        }
+        if (y < 0 || y > screenHeight - crosshairSize) {
+            return;
+        }
+
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) binding.ivCrosshair.getLayoutParams();
+        lp.leftMargin = x;
+        lp.topMargin = y;
+        tempCrosshairX = x;
+        tempCrosshairY = y;
+        binding.ivCrosshair.setLayoutParams(lp);
+        changeCrosshairCoordinateTxt(x, y);
+    }
+
+    private void changeCrosshairCoordinateTxt(int x, int y) {
+        binding.tvCenterXy.setText(String.format(Locale.CHINA, getString(R.string.ty_crosshair_coordinate), x, y));
+    }
+
+    private void setCrossHairCoordinate(int x, int y) {
+        currentCrosshairX = x;
+        currentCrosshairY = y;
     }
     //endregion
 

@@ -22,6 +22,93 @@
         android:layout_height="match_parent"
         android:background="#444" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_crosshair"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_crosshair"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/btn_up"
+        android:layout_width="@dimen/crosshair_btn_size"
+        android:layout_height="@dimen/crosshair_btn_size"
+        android:layout_marginBottom="@dimen/crosshair_btn_margin"
+        android:text="@string/ty_up"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btn_down"
+        android:layout_width="@dimen/crosshair_btn_size"
+        android:layout_height="@dimen/crosshair_btn_size"
+        android:layout_marginTop="@dimen/crosshair_btn_margin"
+        android:text="@string/ty_down"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btn_left"
+        android:layout_width="@dimen/crosshair_btn_size"
+        android:layout_height="@dimen/crosshair_btn_size"
+        android:layout_marginEnd="@dimen/crosshair_btn_margin"
+        android:text="@string/ty_left"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+
+    <Button
+        android:id="@+id/btn_right"
+        android:layout_width="@dimen/crosshair_btn_size"
+        android:layout_height="@dimen/crosshair_btn_size"
+        android:layout_marginStart="@dimen/crosshair_btn_margin"
+        android:text="@string/ty_right"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/xpopup_cancel"
+        android:visibility="gone"
+        app:layout_constraintRight_toLeftOf="@id/btn_left"
+        app:layout_constraintTop_toBottomOf="@id/btn_down"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btn_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/xpopup_ok"
+        android:visibility="gone"
+        app:layout_constraintLeft_toRightOf="@id/btn_right"
+        app:layout_constraintTop_toBottomOf="@id/btn_down"
+        tools:visibility="visible" />
+
     <LinearLayout
         android:id="@+id/ll_camera_menus_left"
         android:layout_width="wrap_content"
@@ -33,11 +120,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent">
 
-        <Button
+        <CheckBox
             android:id="@+id/btn_crosshair_setting"
             style="@style/styleCameraMenuBtn"
             android:layout_marginTop="0dp"
-            android:background="@drawable/selector_crosshair_setting" />
+            android:background="@drawable/selector_crosshair_setting"
+            android:button="@null" />
 
         <TextView
             style="@style/styleCameraMenuTv"
@@ -340,7 +428,7 @@
         <TextView
             android:id="@+id/tv_center_xy"
             style="@style/styleTopStateTv"
-            android:text="准心坐标 X：224  Y：235" />
+            tools:text="准心坐标 X：224  Y：235" />
 
     </LinearLayout>
 
@@ -397,9 +485,9 @@
             android:layout_height="40dp"
             android:background="@drawable/ic_info_params_bg"
             android:gravity="center"
-            tools:text="999"
             android:textColor="@color/white"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            tools:text="999" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -437,9 +525,9 @@
             android:layout_marginTop="4dp"
             android:background="@drawable/ic_info_params_bg"
             android:gravity="center"
-            tools:text="10%"
             android:textColor="@color/white"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            tools:text="10%" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -456,9 +544,9 @@
             android:layout_marginTop="4dp"
             android:background="@drawable/ic_info_params_bg"
             android:gravity="center"
-            tools:text="10米"
             android:textColor="@color/white"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            tools:text="10米" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -477,6 +565,5 @@
         android:layout_marginEnd="15dp"
         app:layout_constraintBottom_toBottomOf="@id/ll_camera_menus_left"
         app:layout_constraintEnd_toEndOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
