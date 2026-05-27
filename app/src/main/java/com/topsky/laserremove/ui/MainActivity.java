@@ -1,15 +1,23 @@
 package com.topsky.laserremove.ui;
 
 import android.annotation.SuppressLint;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ColorUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.permission.PermissionLists;
+import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.core.BasePopupView;
+import com.lxj.xpopup.impl.InputConfirmPopupView;
+import com.lxj.xpopup.interfaces.SimpleCallback;
 import com.skydroid.fpvplayer.PlayerType;
 import com.skydroid.fpvplayer.RtspTransport;
 import com.skydroid.fpvplayer.VideoDecoderCallBack;
@@ -23,6 +31,7 @@ import com.topsky.laserremove.viewModel.LaserControlViewModel;
 import com.topsky.laserremove.viewModel.RecordViewModel;
 import com.topsky.laserremove.viewModel.ScreenshotViewModel;
 import com.topsky.laserremove.widget.PanelView;
+import com.topsky.laserremove.widget.PowerFilter;
 
 import java.nio.ByteBuffer;
 
@@ -58,8 +67,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.btnMarkB.setOnClickListener(this);
         binding.btnToA.setOnClickListener(this);
         binding.btnToB.setOnClickListener(this);
-
         binding.exMenu.setPanelListener(this);
+
+        binding.tvPowerPercent.setOnClickListener(this);
 
         initTouchCustomViewCamera();
     }
@@ -91,10 +101,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             markPoint(true);
         } else if (v.getId() == R.id.btn_mark_b) {
             markPoint(false);
-        }else if (v.getId() == R.id.btn_to_a) {
+        } else if (v.getId() == R.id.btn_to_a) {
             moveToPoint(true);
         } else if (v.getId() == R.id.btn_to_b) {
             moveToPoint(false);
+        } else if (v.getId() == R.id.tv_power_percent) {
+            settingPowerPercent();
         }
     }
     //endregion
@@ -275,6 +287,49 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             binding.tvLaserConnectState.setText(isConnected ? R.string.ty_connected : R.string.ty_unconnect);
             binding.tvLaserConnectState.setTextColor(ColorUtils.getColor(isConnected ? R.color.color_connected : R.color.color_unconnect));
         });
+    }
+
+    //设置激光功率
+    private void settingPowerPercent() {
+        InputConfirmPopupView inputConfirm = new XPopup.Builder(this)
+                .hasStatusBar(false)
+                .hasNavigationBar(false)
+                .popupWidth(SizeUtils.dp2px(400))
+                .setPopupCallback(new SimpleCallback() {
+                    @Override
+                    public void onCreated(BasePopupView popupView) {
+                        super.onCreated(popupView);
+                        if (popupView instanceof InputConfirmPopupView) {
+                            EditText editText = ((InputConfirmPopupView) popupView).getEditText();
+                            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                            editText.setHint(R.string.ty_power_input_tip);
+                            editText.setFilters(new InputFilter[]{
+                                    new InputFilter.LengthFilter(3),
+                                    new PowerFilter()
+                            });
+                        }
+                    }
+                })
+                .asInputConfirm(getResources().getString(R.string.ty_power_setting_title), "",
+                        text -> {
+                            if (text == null || text.isEmpty()) {
+                                Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            try {
+                                int value = Integer.parseInt(text);
+                                if (value < 10 || value > 100) {
+                                    Toast.makeText(MainActivity.this, R.string.ty_power_input_tip, Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                binding.tvPowerPercent.setText(text + "%");
+                            } catch (NumberFormatException e) {
+                                Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+        inputConfirm.show();
     }
     //endregion
 
