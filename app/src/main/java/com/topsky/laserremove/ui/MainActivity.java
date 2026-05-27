@@ -23,6 +23,7 @@ import com.topsky.laserremove.R;
 import com.topsky.laserremove.base.BaseActivity;
 import com.topsky.laserremove.constant.CommonData;
 import com.topsky.laserremove.databinding.ActivityMainBinding;
+import com.topsky.laserremove.enums.SpeedType;
 import com.topsky.laserremove.filter.TyPopCallBack;
 import com.topsky.laserremove.viewModel.CameraViewModel;
 import com.topsky.laserremove.viewModel.CloudPlatformViewModel;
@@ -72,9 +73,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.tvPowerPercent.setOnClickListener(this);
         binding.tvDistance.setOnClickListener(this);
         binding.btnPulseSetting.setOnClickListener(this);
+        binding.ivLaserSwitch.setOnClickListener(this);
 
         initTouchCustomViewCamera();
         initCrosshair();
+        initSpeedView();
     }
 
     private void initFPV() {
@@ -108,12 +111,20 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             moveToPoint(true);
         } else if (v.getId() == R.id.btn_to_b) {
             moveToPoint(false);
+        } else if (v.getId() == R.id.btn_slow) {
+            changeSpeedType(SpeedType.SLOW);
+        } else if (v.getId() == R.id.btn_middle) {
+            changeSpeedType(SpeedType.MIDDLE);
+        } else if (v.getId() == R.id.btn_fast) {
+            changeSpeedType(SpeedType.FAST);
         } else if (v.getId() == R.id.tv_power_percent) {
             settingPowerPercent();
         } else if (v.getId() == R.id.tv_distance) {
             settingLaserDistance();
         } else if (v.getId() == R.id.btn_pulse_setting) {
             settingLaserPulse();
+        } else if (v.getId() == R.id.iv_laser_switch) {
+            laserSwitch();
         } else if (v.getId() == R.id.btn_up) {
             updateCrossHair(0);
         } else if (v.getId() == R.id.btn_down) {
@@ -301,7 +312,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
     //endregion
 
-    // 激光器控制
+    //region 激光器控制
+    private boolean laserOn = false;
+
+    private void laserSwitch() {
+        laserOn = !laserOn;
+        binding.ivLaserSwitch.setSelected(laserOn);
+    }
+
     private void setupLaserControlObservers() {
         //观察云平台连接状态
         laserControlViewModel.getLaserConnectStatus().observe(this, isConnected -> {
@@ -431,6 +449,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
                     defaultCrosshairCoordinate(currentCrosshairX, currentCrosshairY);
+                } else {
+                    binding.btnCrosshairVisible.setChecked(true);
                 }
                 binding.btnUp.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                 binding.btnDown.setVisibility(isChecked ? View.VISIBLE : View.GONE);
@@ -502,6 +522,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void setCrossHairCoordinate(int x, int y) {
         currentCrosshairX = x;
         currentCrosshairY = y;
+    }
+    //endregion
+
+    //region 云台速度
+    //速度模式
+    private int speedType = SpeedType.SLOW;
+
+    private void initSpeedView() {
+        binding.btnSlow.setOnClickListener(this);
+        binding.btnMiddle.setOnClickListener(this);
+        binding.btnFast.setOnClickListener(this);
+
+        binding.btnSlow.setChecked(true);
+    }
+
+    private void changeSpeedType(int type) {
+        speedType = type;
     }
     //endregion
 
