@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ColorUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.hjq.permissions.XXPermissions;
@@ -537,8 +538,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.btnSlow.setChecked(true);
     }
 
-    private void changeSpeedType(int type) {
+    private void changeSpeedType(@SpeedType int type) {
         speedType = type;
+        LogUtils.d("切换速度模式: " + type);
     }
     //endregion
 
