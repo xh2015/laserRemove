@@ -4,6 +4,7 @@ import android.app.Application;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.media.MediaScannerConnection;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
@@ -93,6 +94,16 @@ public class ScreenshotViewModel extends BaseViewModel {
                         fos.write(jpegData);
                         fos.flush();
                     }
+
+                    // 通知媒体库扫描新文件，刷新相册
+                    MediaScannerConnection.scanFile(
+                            getApplication(),
+                            new String[]{file.getAbsolutePath()},
+                            new String[]{"image/jpeg"},
+                            (path, uri) -> {
+                                LogUtils.i("媒体库扫描成功: " + path);
+                            }
+                    );
 
                     screenshotMessage.postValue("截图已保存: " + screenshotPath);
                     LogUtils.i("截图成功: " + screenshotPath);
