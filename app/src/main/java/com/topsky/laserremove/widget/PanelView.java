@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.blankj.utilcode.util.ColorUtils;
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.topsky.laserremove.R;
 
@@ -221,12 +220,12 @@ public class PanelView extends View implements View.OnTouchListener {
     }
 
     private void dpToPx(Context context) {
-        LogUtils.i(TAG, "small Circle Radius " + SizeUtils.px2dp(smallCircleRadius) + "\r"
+        /*LogUtils.i(TAG, "small Circle Radius " + SizeUtils.px2dp(smallCircleRadius) + "\r"
                 + "stroke Width " + SizeUtils.px2dp(strokeWidth) + "\r"
                 + "arrow Left " + SizeUtils.px2dp(arrowLeft) + "\r"
                 + "arrow Top " + SizeUtils.px2dp(arrowTop) + "\r"
                 + "arrow Right " + SizeUtils.px2dp(arrowRight) + "\r"
-                + "arrow Bottom " + SizeUtils.px2dp(arrowBottom));
+                + "arrow Bottom " + SizeUtils.px2dp(arrowBottom));*/
         smallCircleRadius = SizeUtils.dp2px(smallCircleRadiusDP);
         arrowLeft = SizeUtils.dp2px(arrowLeftDP);
         arrowTop = SizeUtils.dp2px(arrowTopDP);

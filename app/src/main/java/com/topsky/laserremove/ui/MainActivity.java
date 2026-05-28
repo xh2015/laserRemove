@@ -92,9 +92,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.fpvWidget.setRtspTranstype(RtspTransport.AUTO);
         //配置遥控器型号-可用于播放器根据遥控器型号选择比较合适的参数
         binding.fpvWidget.setRcType(CommonData.G20_TYPE);
-
         binding.fpvWidget.setVideoDecoderCallBack(this);
-
         binding.fpvWidget.start();
     }
 
@@ -430,7 +428,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //region 相机
     private void setupCameraObservers() {
         cameraViewModel.getCameraZoom().observe(this, zoom -> {
-            binding.tvLightTimes.setText(String.valueOf(zoom));
+            binding.tvLightTimes.setText(zoom);
         });
     }
     //endregion

@@ -6,7 +6,7 @@ import com.blankj.utilcode.util.LogUtils;
 import com.hjq.http.EasyHttp;
 import com.hjq.http.listener.HttpCallbackProxy;
 import com.topsky.laserremove.base.BaseViewModel;
-import com.topsky.laserremove.net.CameraInfoApi;
+import com.topsky.laserremove.net.CameraZoomInfoApi;
 import com.topsky.laserremove.net.CameraZoomApi;
 import com.topsky.laserremove.net.HttpData;
 
@@ -20,9 +20,9 @@ import androidx.lifecycle.MutableLiveData;
  */
 public class CameraViewModel extends BaseViewModel {
     //光学变倍
-    private final MutableLiveData<Integer> cameraZoom = new MutableLiveData<>(10);
+    private final MutableLiveData<String> cameraZoom = new MutableLiveData<>("10");
 
-    public LiveData<Integer> getCameraZoom() {
+    public LiveData<String> getCameraZoom() {
         return cameraZoom;
     }
 
@@ -58,12 +58,18 @@ public class CameraViewModel extends BaseViewModel {
                     public void onHttpSuccess(@NonNull HttpData<CameraZoomApi.Bean> result) {
                         super.onHttpSuccess(result);
                         LogUtils.d("相机变焦成功, type: " + type);
+                        if (type == 0) {
+                            getCameraInfo();
+                        }
                     }
 
                     @Override
                     public void onHttpFail(@NonNull Throwable e) {
                         super.onHttpFail(e);
                         LogUtils.e("相机变焦失败: " + e.getMessage());
+                        if (type == 0) {
+                            getCameraInfo();
+                        }
                     }
                 });
     }
@@ -74,18 +80,22 @@ public class CameraViewModel extends BaseViewModel {
             return;
         }
         EasyHttp.post(lifecycleOwner)
-                .api(new CameraInfoApi())
-                .request(new HttpCallbackProxy<HttpData<CameraInfoApi.Bean>>(null) {
+                .api(new CameraZoomInfoApi())
+                .request(new HttpCallbackProxy<HttpData<CameraZoomInfoApi.Bean>>(null) {
 
                     @Override
-                    public void onHttpSuccess(@NonNull HttpData<CameraInfoApi.Bean> result) {
+                    public void onHttpSuccess(@NonNull HttpData<CameraZoomInfoApi.Bean> result) {
                         super.onHttpSuccess(result);
-                        CameraInfoApi.Bean data = result.getData();
-                        int zoomRatioMax = 0;
+                        CameraZoomInfoApi.Bean data = result.getData();
+                        String zoom = "0";
                         if (data != null) {
-                            zoomRatioMax = data.Focus.ZoomRatioMax;
+                            CameraZoomInfoApi.Zoom zoomRation = data.Zoom;
+                            if (zoomRation != null) {
+                                zoom = zoomRation.ZoomRation;
+                                cameraZoom.postValue(zoom);
+                            }
                         }
-                        LogUtils.d("获取相机信息成功:" + zoomRatioMax);
+                        LogUtils.d("获取相机信息成功:" + zoom);
                     }
 
                     @Override

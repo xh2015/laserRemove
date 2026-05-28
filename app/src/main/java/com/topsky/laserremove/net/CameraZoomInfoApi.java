@@ -7,13 +7,12 @@ import com.topsky.laserremove.utils.LocalCacheUtil;
 
 import androidx.annotation.NonNull;
 
-public final class CameraInfoApi implements IRequestApi {
+public final class CameraZoomInfoApi implements IRequestApi {
 
     @NonNull
     @Override
     public String getApi() {
-        return "merlin/Image_GetFocusCfg.cgi";
-        //return "merlin/Image_GetZoomRation.cgi";
+        return "merlin/Image_GetZoomRation.cgi";
     }
 
     @HttpHeader
@@ -25,16 +24,16 @@ public final class CameraInfoApi implements IRequestApi {
     private final String contentType = "application/json";
 
 
-    public CameraInfoApi() {
+    public CameraZoomInfoApi() {
 
     }
 
 
     public static final class Bean {
-        public Focus Focus;
+        public Zoom Zoom;
     }
 
-    public static final class Focus {
-        public int ZoomRatioMax;
+    public static final class Zoom {
+        public String ZoomRation;
     }
 }
