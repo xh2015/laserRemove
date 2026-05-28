@@ -94,7 +94,7 @@ public class ScreenshotViewModel extends BaseViewModel {
                         fos.flush();
                     }
 
-                    screenshotMessage.postValue("截图已保存: " + file.getName());
+                    screenshotMessage.postValue("截图已保存: " + screenshotPath);
                     LogUtils.i("截图成功: " + screenshotPath);
 
                 } catch (Exception e) {

@@ -229,6 +229,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
         });
 
+        // 观察录像成功消息
+        recordViewModel.getRecordPathMessage().observe(this, path -> {
+            if (!TextUtils.isEmpty(path)) {
+                Toast.makeText(this, getString(R.string.ty_record_sucess_path) + path, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // 观察录像时长
         recordViewModel.getRecordDuration().observe(this, duration -> {
             String formattedTime = RecordViewModel.formatDuration(duration);

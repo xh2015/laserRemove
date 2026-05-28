@@ -13,7 +13,7 @@ public final class CameraZoomApi implements IRequestApi {
     @NonNull
     @Override
     public String getApi() {
-        return "PtzCtrl.cgi?speed=1&channelno=0&value=0&operation=" + type;
+        return "merlin/PtzCtrl.cgi?speed=3&channelno=0&value=0&operation=" + type;
     }
 
     @HttpHeader

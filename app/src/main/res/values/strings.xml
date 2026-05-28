@@ -47,4 +47,5 @@
     <string name="ty_down">下</string>
     <string name="ty_left">左</string>
     <string name="ty_right">右</string>
+    <string name="ty_record_sucess_path">录像完成：</string>
 </resources>

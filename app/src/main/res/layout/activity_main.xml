@@ -17,10 +17,10 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+    <!--<View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#444" />
+        android:background="#444" />-->
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -198,6 +198,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="42dp"
         android:orientation="horizontal"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/ll_camera_menus_left"
         app:layout_constraintLeft_toRightOf="@id/ll_camera_menus_right">
 
@@ -562,6 +563,7 @@
         android:id="@+id/ex_menu"
         android:layout_width="160dp"
         android:layout_height="160dp"
+        android:visibility="invisible"
         android:layout_marginEnd="15dp"
         app:layout_constraintBottom_toBottomOf="@id/ll_camera_menus_left"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -570,12 +572,14 @@
         android:id="@+id/iv_laser_switch"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:visibility="invisible"
         android:layout_marginBottom="30dp"
         android:src="@drawable/selector_laser_switch"
         app:layout_constraintBottom_toTopOf="@id/ex_menu"
         app:layout_constraintRight_toRightOf="@id/ex_menu" />
 
     <RadioGroup
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="130dp"

@@ -35,6 +35,13 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
         return recordDuration;
     }
 
+    // 录像结果消息
+    private final MutableLiveData<String> recordPathMessage = new MutableLiveData<>();
+
+    public LiveData<String> getRecordPathMessage() {
+        return recordPathMessage;
+    }
+
     // 是否有有效视频帧（用于判断是否可以录像）
     private final MutableLiveData<Boolean> hasValidFrame = new MutableLiveData<>(false);
 
@@ -76,7 +83,10 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
     }
 
     //开始录像
+    private String recordFilePath;
+
     public void startRecord() {
+        recordFilePath = null;
         if (Boolean.FALSE.equals(hasValidFrame.getValue())) {
             setErrorMessage("暂无视频帧数据，请确保RTSP流已启动");
             LogUtils.e("录像失败：没有可用的视频帧数据");
@@ -88,13 +98,14 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
         mp4RecordHelper.setUseSoftEncoder(true);
 
         String path = PathUtils.getExternalDownloadsPath() + "/laser_" + System.currentTimeMillis() + ".mp4";
+        recordFilePath = path;
         Exception ret = mp4RecordHelper.start(path);
-
         if (ret == null) {
             isRecording.postValue(true);
             startDurationTimer();
             LogUtils.i("开始录像: " + path);
         } else {
+            recordFilePath = null;
             setErrorMessage("录像失败：" + ret.getMessage());
             LogUtils.e("录像失败：" + ret);
         }
@@ -116,6 +127,8 @@ public class RecordViewModel extends BaseViewModel implements MP4RecordHelper.MP
         if (e != null) {
             setErrorMessage("停止录像失败：" + e.getMessage());
             LogUtils.e("停止录像失败：" + e);
+        } else {
+            recordPathMessage.postValue(recordFilePath);
         }
         isRecording.postValue(false);
         stopDurationTimer();

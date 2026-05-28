@@ -29,7 +29,7 @@ public class CameraViewModel extends BaseViewModel {
         super(application);
     }
 
-    //相机变焦控制  type 9-放大, 10-缩小, 0-停止
+    //相机变焦控制  type 9-缩小, 10-放大, 0-停止
     public void changeCameraZoom(int type) {
         if (lifecycleOwner == null) {
             return;
@@ -54,12 +54,12 @@ public class CameraViewModel extends BaseViewModel {
 
     //开始放大
     public void startZoomIn() {
-        changeCameraZoom(9);
+        changeCameraZoom(10);
     }
 
     //开始缩小
     public void startZoomOut() {
-        changeCameraZoom(10);
+        changeCameraZoom(9);
     }
 
     //停止控制
