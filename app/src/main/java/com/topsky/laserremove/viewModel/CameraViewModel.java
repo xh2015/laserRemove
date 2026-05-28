@@ -6,6 +6,7 @@ import com.blankj.utilcode.util.LogUtils;
 import com.hjq.http.EasyHttp;
 import com.hjq.http.listener.HttpCallbackProxy;
 import com.topsky.laserremove.base.BaseViewModel;
+import com.topsky.laserremove.net.CameraInfoApi;
 import com.topsky.laserremove.net.CameraZoomApi;
 import com.topsky.laserremove.net.HttpData;
 
@@ -27,6 +28,21 @@ public class CameraViewModel extends BaseViewModel {
 
     public CameraViewModel(@NonNull Application application) {
         super(application);
+    }
+
+    //开始放大
+    public void startZoomIn() {
+        changeCameraZoom(10);
+    }
+
+    //开始缩小
+    public void startZoomOut() {
+        changeCameraZoom(9);
+    }
+
+    //停止控制
+    public void stopZoom() {
+        changeCameraZoom(0);
     }
 
     //相机变焦控制  type 9-缩小, 10-放大, 0-停止
@@ -52,19 +68,32 @@ public class CameraViewModel extends BaseViewModel {
                 });
     }
 
-    //开始放大
-    public void startZoomIn() {
-        changeCameraZoom(10);
-    }
+    //获取当前相机信息
+    public void getCameraInfo() {
+        if (lifecycleOwner == null) {
+            return;
+        }
+        EasyHttp.post(lifecycleOwner)
+                .api(new CameraInfoApi())
+                .request(new HttpCallbackProxy<HttpData<CameraInfoApi.Bean>>(null) {
 
-    //开始缩小
-    public void startZoomOut() {
-        changeCameraZoom(9);
-    }
+                    @Override
+                    public void onHttpSuccess(@NonNull HttpData<CameraInfoApi.Bean> result) {
+                        super.onHttpSuccess(result);
+                        CameraInfoApi.Bean data = result.getData();
+                        int zoomRatioMax = 0;
+                        if (data != null) {
+                            zoomRatioMax = data.Focus.ZoomRatioMax;
+                        }
+                        LogUtils.d("获取相机信息成功:" + zoomRatioMax);
+                    }
 
-    //停止控制
-    public void stopZoom() {
-        changeCameraZoom(0);
+                    @Override
+                    public void onHttpFail(@NonNull Throwable e) {
+                        super.onHttpFail(e);
+                        LogUtils.e("获取相机信息失败: " + e.getMessage());
+                    }
+                });
     }
 
     @Override

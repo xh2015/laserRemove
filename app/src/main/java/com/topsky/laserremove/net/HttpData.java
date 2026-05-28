@@ -13,18 +13,21 @@ public class HttpData<T> {
     private Map<String, String> responseHeaders;
 
     /**
-     * 结果对象
+     * 结果对象 - 用于判断请求状态 { message, num }
      */
     @Nullable
-    private Result result;
+    private ResultInfo result;
 
     /**
-     * 数据
+     * 业务数据 - 可能是直接包裹的data字段，也可能是根级别的其他字段
      */
     @Nullable
     private T data;
 
-    public static class Result {
+    /**
+     * 结果信息内部类
+     */
+    public static class ResultInfo {
         /**
          * 消息
          */
@@ -54,7 +57,7 @@ public class HttpData<T> {
     }
 
     @Nullable
-    public Result getResult() {
+    public ResultInfo getResult() {
         return result;
     }
 
@@ -63,12 +66,20 @@ public class HttpData<T> {
     }
 
     public String getMessage() {
-        return result != null ? result.getMessage() : "未知错误";
+        return result != null && result.getMessage() != null ? result.getMessage() : "未知错误";
     }
 
     @Nullable
     public T getData() {
         return data;
+    }
+
+    public void setData(@Nullable T data) {
+        this.data = data;
+    }
+
+    public void setResult(@Nullable ResultInfo result) {
+        this.result = result;
     }
 
     /**

@@ -7,6 +7,9 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.hjq.gson.factory.GsonFactory;
 import com.hjq.http.EasyLog;
@@ -104,7 +107,50 @@ public final class RequestHandler implements IRequestHandler {
         final Object result;
 
         try {
-            result = GsonFactory.getSingletonGson().fromJson(text, type);
+            // 先解析为 JsonObject 进行预处理
+            JsonObject jsonObject = JsonParser.parseString(text).getAsJsonObject();
+
+            // 检查是否是 HttpData 类型
+            if (type instanceof java.lang.reflect.ParameterizedType) {
+                java.lang.reflect.ParameterizedType parameterizedType = (java.lang.reflect.ParameterizedType) type;
+                Type rawType = parameterizedType.getRawType();
+
+                // 如果返回类型是 HttpData，需要特殊处理
+                if (rawType instanceof Class && HttpData.class.isAssignableFrom((Class<?>) rawType)) {
+                    // 提取 result 字段
+                    HttpData.ResultInfo resultInfo = null;
+                    if (jsonObject.has("result")) {
+                        resultInfo = GsonFactory.getSingletonGson().fromJson(jsonObject.get("result"), HttpData.ResultInfo.class);
+                        jsonObject.remove("result");
+                    }
+
+                    // 提取泛型类型 T
+                    Type dataType = parameterizedType.getActualTypeArguments()[0];
+
+                    // 根据泛型类型决定如何提取数据
+                    Object data = null;
+                    if (dataType instanceof Class && !((Class<?>) dataType).isAssignableFrom(Map.class)) {
+                        // 如果泛型是具体的 Bean 类（如 CameraInfoApi.Bean）
+                        // 尝试从根级别提取与 Bean 类匹配的字段
+                        data = extractBeanData(jsonObject, (Class<?>) dataType);
+                    } else {
+                        // 如果泛型是 Map 或其他类型，将整个 jsonObject（除了result）作为 data
+                        data = GsonFactory.getSingletonGson().fromJson(jsonObject, dataType);
+                    }
+
+                    // 创建 HttpData 实例并设置值
+                    HttpData<Object> httpData = new HttpData<>();
+                    httpData.setResult(resultInfo);
+                    httpData.setData(data);
+                    result = httpData;
+                } else {
+                    // 非 HttpData 类型，正常解析
+                    result = GsonFactory.getSingletonGson().fromJson(text, type);
+                }
+            } else {
+                // 非参数化类型，正常解析
+                result = GsonFactory.getSingletonGson().fromJson(text, type);
+            }
         } catch (JsonSyntaxException e) {
             // 返回结果读取异常
             throw new DataException(mApplication.getString(R.string.http_data_explain_error), e);
@@ -135,6 +181,44 @@ public final class RequestHandler implements IRequestHandler {
             throw new ResultException(model.getMessage(), model);
         }
         return result;
+    }
+
+    /**
+     * 从 JsonObject 中提取与指定 Bean 类匹配的数据
+     * 策略：遍历 JsonObject 的所有字段，找到与 Bean 类字段最匹配的顶级字段
+     */
+    private Object extractBeanData(JsonObject jsonObject, Class<?> beanClass) {
+        Gson gson = GsonFactory.getSingletonGson();
+
+        // 策略1：如果 Bean 类有内部类结构，尝试匹配字段名
+        // 例如：CameraInfoApi.Bean 中有 Focus 字段，JSON 根级别也有 Focus 字段
+
+        // 获取 Bean 类的所有字段名
+        java.lang.reflect.Field[] fields = beanClass.getDeclaredFields();
+
+        // 创建一个临时的 JsonObject 来收集匹配的字段
+        JsonObject matchedData = new JsonObject();
+
+        for (java.lang.reflect.Field field : fields) {
+            String fieldName = field.getName();
+            if (jsonObject.has(fieldName)) {
+                // 找到匹配的字段，添加到结果中
+                matchedData.add(fieldName, jsonObject.get(fieldName));
+            }
+        }
+
+        // 如果有匹配的字段，解析为 Bean 类
+        if (matchedData.size() > 0) {
+            try {
+                return gson.fromJson(matchedData, beanClass);
+            } catch (Exception e) {
+                // 解析失败，返回整个 jsonObject
+                return gson.fromJson(jsonObject, beanClass);
+            }
+        }
+
+        // 没有匹配的字段，尝试直接解析整个 jsonObject
+        return gson.fromJson(jsonObject, beanClass);
     }
 
     @NonNull

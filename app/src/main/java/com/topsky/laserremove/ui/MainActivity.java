@@ -292,6 +292,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 return false;
             }
         });
+
+        cameraViewModel.getCameraInfo();
     }
     //endregion
 
