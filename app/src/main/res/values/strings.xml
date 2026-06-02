@@ -6,7 +6,7 @@
     <string name="http_data_explain_error">数据解析异常，请稍后</string>
     <string name="http_server_out_time">服务器请求超时，请稍后再试</string>
     <string name="http_network_error">请求失败，请检查网络设置</string>
-    <string name="http_response_error">服务器响应异常，请稍后再试，响应码：%d，响应信息：%s</string>
+    <string name="http_response_error" formatted="false">服务器响应异常，请稍后再试，响应码：%d，响应信息：%s</string>
     <string name="http_server_error">服务器连接异常，请稍后再试</string>
     <string name="http_request_cancel">请求被中断，请重试</string>
     <string name="http_response_null_body">服务器数据返回异常，请稍后再试</string>
@@ -41,11 +41,11 @@
     <string name="ty_power_input_error_tip">请输入有效的整数</string>
     <string name="ty_distance_setting_title">距离设置</string>
     <string name="ty_distance_input_tip">请输入10~9999之间的整数</string>
-    <string name="ty_distance_format">%s米</string>
-    <string name="ty_crosshair_coordinate">准心坐标 X：%d  Y：%d</string>
+    <string name="ty_distance_format">%d米</string>
+    <string name="ty_crosshair_coordinate" formatted="false">准心坐标 X：%d  Y：%d</string>
     <string name="ty_up">上</string>
     <string name="ty_down">下</string>
     <string name="ty_left">左</string>
     <string name="ty_right">右</string>
-    <string name="ty_record_sucess_path">录像完成：</string>
+    <string name="ty_record_success_path">录像完成：</string>
 </resources>

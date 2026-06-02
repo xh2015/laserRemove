@@ -9,7 +9,6 @@ import com.hjq.http.EasyConfig;
 import com.hjq.http.config.IRequestServer;
 import com.topsky.laserremove.net.CameraServer;
 import com.topsky.laserremove.net.RequestHandler;
-import com.topsky.laserremove.utils.LocalCacheUtil;
 
 import androidx.multidex.MultiDexApplication;
 import okhttp3.OkHttpClient;

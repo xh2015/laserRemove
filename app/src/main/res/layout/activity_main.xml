@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    tools:background="@color/black"
     tools:context=".ui.MainActivity">
 
     <com.skydroid.fpvplayer.FPVWidget
@@ -198,10 +198,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="42dp"
         android:orientation="horizontal"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/ll_camera_menus_left"
-        app:layout_constraintLeft_toRightOf="@id/ll_camera_menus_right"
-        tools:visibility="visible">
+        app:layout_constraintLeft_toRightOf="@id/ll_camera_menus_right">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -221,6 +219,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -238,6 +237,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -255,6 +255,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -272,6 +273,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -289,6 +291,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -306,6 +309,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"

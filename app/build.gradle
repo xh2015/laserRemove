@@ -63,6 +63,12 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+
+    packaging {
+        resources {
+            excludes += ['META-INF/INDEX.LIST', 'META-INF/io.netty.versions.properties']
+        }
+    }
 }
 
 dependencies {
@@ -77,6 +83,9 @@ dependencies {
     implementation libs.lifecycle.viewmodel
     implementation libs.lifecycle.livedata
     implementation libs.lifecycle.runtime
+
+    // Netty 网络框架
+    implementation 'io.netty:netty-all:4.1.100.Final'
 
     // 权限请求框架：https://github.com/getActivity/XXPermissions
     implementation 'com.github.getActivity:XXPermissions:26.5'

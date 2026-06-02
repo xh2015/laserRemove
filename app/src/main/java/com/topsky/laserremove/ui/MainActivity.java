@@ -29,6 +29,7 @@ import com.topsky.laserremove.filter.TyPopCallBack;
 import com.topsky.laserremove.viewModel.CameraViewModel;
 import com.topsky.laserremove.viewModel.CloudPlatformViewModel;
 import com.topsky.laserremove.viewModel.LaserControlViewModel;
+import com.topsky.laserremove.viewModel.NettyViewModel;
 import com.topsky.laserremove.viewModel.RecordViewModel;
 import com.topsky.laserremove.viewModel.ScreenshotViewModel;
 import com.topsky.laserremove.widget.PanelView;
@@ -47,6 +48,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private CameraViewModel cameraViewModel;
     private CloudPlatformViewModel cloudPlatformViewModel;
     private LaserControlViewModel laserControlViewModel;
+    private NettyViewModel nettyViewModel;
 
     @Override
     protected ActivityMainBinding initViewBinding(LayoutInflater inflater) {
@@ -93,7 +95,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         //配置遥控器型号-可用于播放器根据遥控器型号选择比较合适的参数
         binding.fpvWidget.setRcType(CommonData.G20_TYPE);
         binding.fpvWidget.setVideoDecoderCallBack(this);
-        binding.fpvWidget.start();
+        //todo binding.fpvWidget.start();
     }
 
     @Override
@@ -148,8 +150,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         cameraViewModel = new ViewModelProvider(this).get(CameraViewModel.class);
         cloudPlatformViewModel = new ViewModelProvider(this).get(CloudPlatformViewModel.class);
         laserControlViewModel = new ViewModelProvider(this).get(LaserControlViewModel.class);
-
         cameraViewModel.setLifecycleOwner(this);
+        initNettyViewModel();
         setupObservers();
     }
 
@@ -230,7 +232,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         // 观察录像成功消息
         recordViewModel.getRecordPathMessage().observe(this, path -> {
             if (!TextUtils.isEmpty(path)) {
-                Toast.makeText(this, getString(R.string.ty_record_sucess_path) + path, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.ty_record_success_path) + path, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -291,7 +293,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
         });
 
-        cameraViewModel.getCameraInfo();
+        //todo cameraViewModel.getCameraInfo();
     }
     //endregion
 
@@ -326,8 +328,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void laserSwitch() {
         laserOn = !laserOn;
         binding.ivLaserSwitch.setSelected(laserOn);
+        // 通过Netty发送激光开关指令
+        laserControlViewModel.sendLaserSwitch(laserOn);
     }
 
+    @SuppressLint("SetTextI18n")
     private void setupLaserControlObservers() {
         //观察云平台连接状态
         laserControlViewModel.getLaserConnectStatus().observe(this, isConnected -> {
@@ -365,7 +370,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     Toast.makeText(MainActivity.this, R.string.ty_power_input_tip, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                laserControlViewModel.setLaserPower(value);
+                // 通过Netty发送功率设置指令
+                laserControlViewModel.sendLaserPower(value);
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
             }
@@ -407,7 +413,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                laserControlViewModel.setLaserPulse(value);
+                // 通过Netty发送脉冲设置指令
+                laserControlViewModel.sendLaserPulse(value);
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
             }
@@ -551,11 +558,46 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
     //endregion
 
+    //region tcp server相关
+    private void initNettyViewModel() {
+        if (XXPermissions.isGrantedPermission(this, PermissionLists.getPostNotificationsPermission())) {
+            settingNettyViewModel();
+        } else {
+            XXPermissions.with(this)
+                    .permission(PermissionLists.getPostNotificationsPermission())
+                    .request((grantedList, deniedList) -> {
+                        if (deniedList.isEmpty()) {
+                            settingNettyViewModel();
+                        }
+                    });
+        }
+    }
+
+    private void settingNettyViewModel() {
+        nettyViewModel = new ViewModelProvider(this).get(NettyViewModel.class);//Netty连接状态
+        setupNettyObservers();
+        // 启动Netty服务并设置消息分发
+        nettyViewModel.startAndBindService();
+        nettyViewModel.dispatchMessage(cloudPlatformViewModel, laserControlViewModel);
+    }
+
+    private void setupNettyObservers() {
+        //连接状态
+        nettyViewModel.getConnected().observe(this, connected -> {
+        });
+    }
+    //endregion
+
     //region 释放资源
     @Override
     protected void onDestroy() {
         super.onDestroy();
         binding.fpvWidget.stop();
+
+        // 解绑Netty服务
+        if (nettyViewModel != null) {
+            nettyViewModel.unbindService();
+        }
     }
     //endregion
 }
