@@ -17,7 +17,7 @@ import androidx.lifecycle.MutableLiveData;
  */
 public class LaserControlViewModel extends BaseViewModel {
     private static final String TAG = "LaserControlViewModel";
-    
+
     // 激光连接状态
     private final MutableLiveData<Boolean> laserConnectStatus = new MutableLiveData<>(false);
 
@@ -80,12 +80,12 @@ public class LaserControlViewModel extends BaseViewModel {
         if (message == null) {
             return;
         }
-        
+
         LogUtils.d(TAG, "Handling laser control message: " + message);
-        
+
         byte commandCode = message.getCommandCode();
         byte[] data = message.getData();
-        
+
         // 根据指令代码处理激光控制消息
         switch (commandCode) {
             case 0x00:
@@ -124,14 +124,14 @@ public class LaserControlViewModel extends BaseViewModel {
      * 发送激光开关指令
      */
     public void sendLaserSwitch(boolean isOn) {
-        byte[] data = new byte[]{(byte) (isOn ? 0x01 : 0x00)};
-        
+        byte[] data = new byte[]{ (byte) (isOn ? 0x01 : 0x00) };
+
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_LASER_CONTROL,
                 (byte) 0x00,
                 data
         );
-        
+
         laserSwitchStatus.postValue(isOn);
     }
 
@@ -143,35 +143,27 @@ public class LaserControlViewModel extends BaseViewModel {
             LogUtils.e(TAG, "Invalid power value: " + power);
             return;
         }
-        
-        byte[] data = new byte[]{(byte) power};
-        
+
+        byte[] data = new byte[]{ (byte) power };
+
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_LASER_CONTROL,
                 (byte) 0x01,
                 data
         );
-        
+
         laserPower.postValue(power);
     }
 
-    /**
-     * 发送脉冲设置指令
-     */
+    //发送脉冲设置指令
     public void sendLaserPulse(int pulse) {
-        if (pulse < 0 || pulse > 100) {
-            LogUtils.e(TAG, "Invalid pulse value: " + pulse);
-            return;
-        }
-        
-        byte[] data = new byte[]{(byte) pulse};
-        
+        byte[] data = new byte[]{ (byte) pulse };
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_LASER_CONTROL,
                 (byte) 0x03,
                 data
         );
-        
+
         laserPulse.postValue(pulse);
     }
 }

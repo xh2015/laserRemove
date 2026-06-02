@@ -75,9 +75,7 @@ public class CloudPlatformViewModel extends BaseViewModel {
         }
     }
 
-    /**
-     * 处理云台消息
-     */
+    //处理云台消息
     private void handlePtzMessage(byte commandCode, byte[] data) {
         LogUtils.d(TAG, "PTZ message, command: " + String.format("0x%02X", commandCode));
         // 根据指令代码处理云台控制逻辑
@@ -102,45 +100,33 @@ public class CloudPlatformViewModel extends BaseViewModel {
         }
     }
 
-    /**
-     * 处理激光测距消息
-     */
+    //处理激光测距消息
     private void handleLaserDistanceMessage(byte commandCode, byte[] data) {
         LogUtils.d(TAG, "Laser distance message, command: " + String.format("0x%02X", commandCode));
         // 解析测距数据等
     }
 
-    /**
-     * 处理激光指示消息
-     */
+    //处理激光指示消息
     private void handleLaserIndicatorMessage(byte commandCode, byte[] data) {
         LogUtils.d(TAG, "Laser indicator message, command: " + String.format("0x%02X", commandCode));
     }
 
-    /**
-     * 处理人体感应消息
-     */
+    //处理人体感应消息
     private void handleHumanSensorMessage(byte commandCode, byte[] data) {
         LogUtils.d(TAG, "Human sensor message, command: " + String.format("0x%02X", commandCode));
     }
 
-    /**
-     * 处理加速度计消息
-     */
+    //处理加速度计消息
     private void handleAccelerometerMessage(byte commandCode, byte[] data) {
         LogUtils.d(TAG, "Accelerometer message, command: " + String.format("0x%02X", commandCode));
     }
 
-    /**
-     * 处理激光调焦消息
-     */
+    //处理激光调焦消息
     private void handleLaserFocusMessage(byte commandCode, byte[] data) {
         LogUtils.d(TAG, "Laser focus message, command: " + String.format("0x%02X", commandCode));
     }
 
-    /**
-     * 处理激光指令消息
-     */
+    //处理激光指令消息
     private void handleLaserCommandMessage(byte commandCode, byte[] data) {
     }
 

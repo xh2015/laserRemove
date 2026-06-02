@@ -20,8 +20,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 
 public class NettyClient {
@@ -117,7 +115,7 @@ public class NettyClient {
                         isConnecting.set(false);
                         reconnectCount = 0;
                         LogUtils.d(TAG, "Connected successfully");
-                        startHeartbeat();
+                        //startHeartbeat();
                         if (listener != null) {
                             listener.onConnected();
                         }
@@ -138,7 +136,7 @@ public class NettyClient {
 
     //断开连接
     public void disconnect() {
-        stopHeartbeat();
+        //stopHeartbeat();
         if (channel != null && channel.isActive()) {
             channel.close().addListener(future -> {
                 isConnected.set(false);
@@ -154,6 +152,7 @@ public class NettyClient {
 
     //发送消息
     public void sendMessage(final NettyMessage message) {
+        LogUtils.d(TAG, "Sending message: " + message);
         if (!isConnected.get() || channel == null) {
             LogUtils.e(TAG, "Not connected, cannot send message");
             if (listener != null) {
@@ -213,6 +212,7 @@ public class NettyClient {
             }
         };
 
+        heartbeatRunning = true;
         executorService.execute(heartbeatTask);
         LogUtils.d(TAG, "Heartbeat started");
     }
@@ -288,7 +288,7 @@ public class NettyClient {
 
     //释放资源
     public void release() {
-        stopHeartbeat();
+        //stopHeartbeat();
         disconnect();
 
         if (eventLoopGroup != null) {
@@ -332,13 +332,13 @@ public class NettyClient {
 
         @Override
         public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
-            if (evt instanceof IdleStateEvent) {
+            /*if (evt instanceof IdleStateEvent) {
                 IdleStateEvent event = (IdleStateEvent) evt;
                 if (event.state() == IdleState.WRITER_IDLE) {
                     // 发送心跳
                     sendHeartbeat();
                 }
-            }
+            }*/
         }
 
         @Override

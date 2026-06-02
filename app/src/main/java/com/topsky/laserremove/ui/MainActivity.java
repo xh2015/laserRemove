@@ -95,7 +95,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         //配置遥控器型号-可用于播放器根据遥控器型号选择比较合适的参数
         binding.fpvWidget.setRcType(CommonData.G20_TYPE);
         binding.fpvWidget.setVideoDecoderCallBack(this);
-        //todo binding.fpvWidget.start();
+        binding.fpvWidget.start();
     }
 
     @Override
@@ -293,7 +293,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             }
         });
 
-        //todo cameraViewModel.getCameraInfo();
+        cameraViewModel.getCameraInfo();
     }
     //endregion
 
