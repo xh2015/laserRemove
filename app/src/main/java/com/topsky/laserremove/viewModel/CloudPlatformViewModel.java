@@ -142,7 +142,6 @@ public class CloudPlatformViewModel extends BaseViewModel {
      * 处理激光指令消息
      */
     private void handleLaserCommandMessage(byte commandCode, byte[] data) {
-        LogUtils.d(TAG, "Laser command message, command: " + String.format("0x%02X", commandCode));
     }
 
     //region 云台方向控制 发送转动 0下 1左 2上 3右

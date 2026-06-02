@@ -6,60 +6,84 @@ package com.topsky.laserremove.net.netty;
  */
 public class NettyMessage {
 
-    /** 帧头 */
+    /**
+     * 帧头
+     */
     public static final byte FRAME_HEADER = (byte) 0xAA;
-    
-    /** 帧尾 */
+
+    /**
+     * 帧尾
+     */
     public static final byte FRAME_TAIL = (byte) 0x55;
-    
-    /** 最小帧长度：帧头(1) + 帧长度(1) + 模组代码(1) + 指令代码(1) + 帧尾(1) + 校验和(1) = 6 */
+
+    /**
+     * 最小帧长度：帧头(1) + 帧长度(1) + 模组代码(1) + 指令代码(1) + 帧尾(1) + 校验和(1) = 6
+     */
     public static final int MIN_FRAME_LENGTH = 6;
-    
-    /** 最大帧长度 */
+
+    /**
+     * 最大帧长度
+     */
     public static final int MAX_FRAME_LENGTH = 256;
 
-    /** 模组代码 - 云台相关 */
+    /**
+     * 模组代码 - 云台相关
+     */
     public static final byte MODULE_PTZ = (byte) 0xF0;
-    
-    /** 模组代码 - 激光测距 */
+
+    /**
+     * 模组代码 - 激光测距
+     */
     public static final byte MODULE_LASER_DISTANCE = (byte) 0xF1;
-    
-    /** 模组代码 - 激光指示 */
+
+    /**
+     * 模组代码 - 激光指示
+     */
     public static final byte MODULE_LASER_INDICATOR = (byte) 0xF2;
-    
-    /** 模组代码 - 人体感应 */
+
+    /**
+     * 模组代码 - 人体感应
+     */
     public static final byte MODULE_HUMAN_SENSOR = (byte) 0xF4;
-    
-    /** 模组代码 - 加速度计 */
+
+    /**
+     * 模组代码 - 加速度计
+     */
     public static final byte MODULE_ACCELEROMETER = (byte) 0xF5;
-    
-    /** 模组代码 - 激光调焦 */
+
+    /**
+     * 模组代码 - 激光调焦
+     */
     public static final byte MODULE_LASER_FOCUS = (byte) 0xF6;
-    
-    /** 模组代码 - 激光指令 */
+
+    /**
+     * 模组代码 - 激光指令
+     */
     public static final byte MODULE_LASER_COMMAND = (byte) 0xF7;
-    
-    /** 模组代码 - 激光控制 */
+
+    /**
+     * 模组代码 - 激光控制
+     */
     public static final byte MODULE_LASER_CONTROL = (byte) 0xF8;
 
     // 帧头
     private byte header;
-    
+
     // 帧长度（包含帧头到校验和的所有字节数）
     private byte length;
-    
+
     // 模组代码
     private byte moduleCode;
-    
+
     // 指令代码
     private byte commandCode;
-    
+
     // 数据内容
     private byte[] data;
-    
+
     // 帧尾
     private byte tail;
-    
+
     // 校验和
     private byte checksum;
 
@@ -72,7 +96,7 @@ public class NettyMessage {
         this.header = FRAME_HEADER;
         this.moduleCode = moduleCode;
         this.commandCode = commandCode;
-        this.data = data != null ? data : new byte[0];
+        this.data = data;
         this.tail = FRAME_TAIL;
         this.length = calculateLength();
         this.checksum = calculateChecksum();
@@ -118,21 +142,21 @@ public class NettyMessage {
     public byte[] toBytes() {
         int dataLen = data != null ? data.length : 0;
         byte[] bytes = new byte[6 + dataLen];
-        
+
         int index = 0;
         bytes[index++] = header;
         bytes[index++] = length;
         bytes[index++] = moduleCode;
         bytes[index++] = commandCode;
-        
+
         if (data != null) {
             System.arraycopy(data, 0, bytes, index, data.length);
             index += data.length;
         }
-        
+
         bytes[index++] = tail;
         bytes[index] = checksum;
-        
+
         return bytes;
     }
 
@@ -143,25 +167,25 @@ public class NettyMessage {
         if (bytes == null || bytes.length < MIN_FRAME_LENGTH) {
             return null;
         }
-        
+
         NettyMessage message = new NettyMessage();
         int index = 0;
-        
+
         message.header = bytes[index++];
         message.length = bytes[index++];
         message.moduleCode = bytes[index++];
         message.commandCode = bytes[index++];
-        
+
         int dataLen = bytes.length - 6; // 减去帧头、长度、模组、指令、帧尾、校验和
         if (dataLen > 0) {
             message.data = new byte[dataLen];
             System.arraycopy(bytes, index, message.data, 0, dataLen);
             index += dataLen;
         }
-        
+
         message.tail = bytes[index++];
         message.checksum = bytes[index];
-        
+
         return message;
     }
 
@@ -247,6 +271,9 @@ public class NettyMessage {
         sb.append(", moduleCode=").append(String.format("0x%02X", moduleCode));
         sb.append(", commandCode=").append(String.format("0x%02X", commandCode));
         sb.append(", data=").append(data != null ? data.length + " bytes" : "null");
+        if (data != null) {
+            sb.append(", data=").append(NettyMessageUtils.bytesToHex(data));
+        }
         sb.append(", tail=").append(String.format("0x%02X", tail));
         sb.append(", checksum=").append(String.format("0x%02X", checksum));
         sb.append("}");

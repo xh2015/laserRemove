@@ -2,6 +2,8 @@ package com.topsky.laserremove.net.netty;
 
 import com.blankj.utilcode.util.LogUtils;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -342,7 +344,15 @@ public class NettyClient {
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
             LogUtils.e(TAG, "Channel exception: " + cause.getMessage());
-            ctx.close();
+            
+            // 稳健模式：只在严重网络异常时断开连接
+            // 编码/解码等业务异常不影响连接稳定性
+            if (cause instanceof IOException || cause instanceof SocketException) {
+                LogUtils.w(TAG, "Network exception, closing connection");
+                ctx.close();
+            } else {
+                LogUtils.w(TAG, "Non-critical exception, connection kept alive");
+            }
         }
     }
 }

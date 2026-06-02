@@ -2,11 +2,11 @@ package com.topsky.laserremove.net.netty;
 
 import com.blankj.utilcode.util.LogUtils;
 
+import java.util.List;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-
-import java.util.List;
 
 /**
  * Netty消息解码器
@@ -77,7 +77,8 @@ public class NettyMessageDecoder extends ByteToMessageDecoder {
                     int toRead = Math.min(remaining, in.readableBytes());
                     
                     if (toRead > 0) {
-                        in.readBytes(tempBuffer, contentRead, toRead);
+                        // 使用 writeBytes 方法，会自动更新 writerIndex
+                        tempBuffer.writeBytes(in, toRead);
                         contentRead += toRead;
                     }
                     
@@ -129,7 +130,6 @@ public class NettyMessageDecoder extends ByteToMessageDecoder {
             tempBuffer = null;
         }
         state = DecodeState.FIND_HEADER;
-        ctx.fireExceptionCaught(cause);
     }
 
     @Override

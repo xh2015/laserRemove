@@ -30,6 +30,5 @@ public class NettyMessageEncoder extends MessageToByteEncoder<NettyMessage> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LogUtils.e(TAG, "Encoder exception: " + cause.getMessage());
-        ctx.fireExceptionCaught(cause);
     }
 }
