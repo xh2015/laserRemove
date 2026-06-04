@@ -11,10 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-/**
- * 激光控制ViewModel
- * 处理模组代码 0xF8 的消息
- */
 public class LaserControlViewModel extends BaseViewModel {
     private static final String TAG = "LaserControlViewModel";
 
@@ -73,9 +69,6 @@ public class LaserControlViewModel extends BaseViewModel {
         laserPulse.postValue(pulse);
     }
 
-    /**
-     * 处理Netty消息
-     */
     public void handleNettyMessage(NettyMessage message) {
         if (message == null) {
             return;
@@ -120,9 +113,6 @@ public class LaserControlViewModel extends BaseViewModel {
         }
     }
 
-    /**
-     * 发送激光开关指令
-     */
     public void sendLaserSwitch(boolean isOn) {
         byte[] data = new byte[]{ (byte) (isOn ? 0x01 : 0x00) };
 
@@ -135,9 +125,6 @@ public class LaserControlViewModel extends BaseViewModel {
         laserSwitchStatus.postValue(isOn);
     }
 
-    /**
-     * 发送功率设置指令
-     */
     public void sendLaserPower(int power) {
         if (power < 0 || power > 100) {
             LogUtils.e(TAG, "Invalid power value: " + power);

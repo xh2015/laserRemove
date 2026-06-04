@@ -14,10 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-/**
- * 相机控制 ViewModel
- * 负责相机相关的所有业务逻辑（变焦、对焦等）
- */
 public class CameraViewModel extends BaseViewModel {
     //光学变倍
     private final MutableLiveData<String> cameraZoom = new MutableLiveData<>("10");
@@ -109,6 +105,5 @@ public class CameraViewModel extends BaseViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        LogUtils.i("CameraViewModel 已清理");
     }
 }

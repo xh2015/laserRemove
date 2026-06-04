@@ -26,13 +26,14 @@ public class NettyClient {
     private static final String TAG = "NettyClient";
     // 服务器地址和端口
     private static final String DEFAULT_HOST = "192.168.1.33";
+    //private static final String DEFAULT_HOST = "192.168.0.9";
     private static final int DEFAULT_PORT = 8899;
     // 心跳间隔（秒）
     private static final int HEARTBEAT_INTERVAL = 30;
     // 重连间隔（秒）
-    private static final int RECONNECT_DELAY = 5;
+    private static final int RECONNECT_DELAY = 4;
     // 最大重连次数
-    private static final int MAX_RECONNECT_COUNT = 10;
+    private static final int MAX_RECONNECT_COUNT = 3000;
     private final String host;
     private final int port;
 
@@ -102,7 +103,6 @@ public class NettyClient {
         }
 
         isConnecting.set(true);
-        reconnectCount = 0;
         executorService.execute(new Runnable() {
             @Override
             public void run() {

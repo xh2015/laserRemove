@@ -11,10 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-/**
- * 云台控制ViewModel
- * 处理模组代码 0xF0-0xF7 的消息
- */
 public class CloudPlatformViewModel extends BaseViewModel {
     private static final String TAG = "CloudPlatformViewModel";
     
@@ -33,9 +29,6 @@ public class CloudPlatformViewModel extends BaseViewModel {
         cpConnectStatus.postValue(isConnected);
     }
 
-    /**
-     * 处理Netty消息
-     */
     public void handleNettyMessage(NettyMessage message) {
         if (message == null) {
             return;
