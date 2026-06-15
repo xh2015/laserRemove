@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -56,7 +60,13 @@ public class NettyClient {
     private volatile boolean heartbeatRunning = false;
 
     // 线程池
-    private final ExecutorService executorService = Executors.newFixedThreadPool(6);
+    private final ExecutorService executorService = new ThreadPoolExecutor(
+            4,   // 核心线程：足够处理常规的连接和消息发送
+            12,  // 最大线程：应对突发任务（如多次重连）
+            60L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(50),  // 适中的队列容量
+            new ThreadPoolExecutor.AbortPolicy()  // 满载时抛出异常
+    );
 
     public NettyClient() {
         this(DEFAULT_HOST, DEFAULT_PORT);
@@ -66,6 +76,7 @@ public class NettyClient {
         this.host = host;
         this.port = port;
         init();
+        initTimeOut();
     }
 
     private void init() {
@@ -114,8 +125,10 @@ public class NettyClient {
                         isConnected.set(true);
                         isConnecting.set(false);
                         reconnectCount = 0;
+                        lastMessageTime = System.currentTimeMillis();
                         LogUtils.d(TAG, "Connected successfully");
                         //startHeartbeat();
+                        startMessageTimeoutCheck();
                         if (listener != null) {
                             listener.onConnected();
                         }
@@ -137,6 +150,7 @@ public class NettyClient {
     //断开连接
     public void disconnect() {
         //stopHeartbeat();
+        stopMessageTimeoutCheck();
         if (channel != null && channel.isActive()) {
             channel.close().addListener(future -> {
                 isConnected.set(false);
@@ -227,6 +241,7 @@ public class NettyClient {
 
     //处理连接失败
     private void handleConnectFailed(Throwable cause) {
+        stopMessageTimeoutCheck();
         isConnected.set(false);
         isConnecting.set(false);
         LogUtils.e(TAG, "Connect failed: " + cause.getMessage());
@@ -272,6 +287,7 @@ public class NettyClient {
 
     //处理连接断开
     private void handleDisconnect() {
+        stopMessageTimeoutCheck();
         isConnected.set(false);
         LogUtils.d(TAG, "Connection disconnected");
         if (listener != null) {
@@ -289,6 +305,20 @@ public class NettyClient {
     //释放资源
     public void release() {
         //stopHeartbeat();
+
+        stopMessageTimeoutCheck();
+
+        if (timeoutExecutor != null) {
+            timeoutExecutor.shutdown();
+            try {
+                if (!timeoutExecutor.awaitTermination(3, TimeUnit.SECONDS)) {
+                    timeoutExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                timeoutExecutor.shutdownNow();
+            }
+        }
+
         disconnect();
 
         if (eventLoopGroup != null) {
@@ -325,6 +355,9 @@ public class NettyClient {
         public void channelRead0(ChannelHandlerContext ctx, NettyMessage msg) {
             LogUtils.d(TAG, "Message received: " + msg);
 
+            // 更新最后接收消息时间
+            updateLastMessageTime();
+
             if (listener != null) {
                 listener.onMessageReceived(msg);
             }
@@ -344,7 +377,7 @@ public class NettyClient {
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
             LogUtils.e(TAG, "Channel exception: " + cause.getMessage());
-            
+
             // 稳健模式：只在严重网络异常时断开连接
             // 编码/解码等业务异常不影响连接稳定性
             if (cause instanceof IOException || cause instanceof SocketException) {
@@ -355,4 +388,50 @@ public class NettyClient {
             }
         }
     }
+
+    //region超时处理器
+    // 消息超时检测
+    private ScheduledExecutorService timeoutExecutor;
+    private ScheduledFuture<?> timeoutCheckTask;
+    private volatile long lastMessageTime = 0;
+    private static final long MESSAGE_TIMEOUT = 5000; // 5秒超时
+
+    private void initTimeOut() {
+        timeoutExecutor = Executors.newSingleThreadScheduledExecutor();
+    }
+
+    //启动消息超时检测
+    private void startMessageTimeoutCheck() {
+        stopMessageTimeoutCheck();
+
+        // 重置最后消息时间，避免使用旧的时间戳
+        lastMessageTime = System.currentTimeMillis();
+
+        timeoutCheckTask = timeoutExecutor.scheduleWithFixedDelay(() -> {
+            if (isConnected.get() && lastMessageTime > 0) {
+                long elapsed = System.currentTimeMillis() - lastMessageTime;
+                if (elapsed > MESSAGE_TIMEOUT) {
+                    LogUtils.e(TAG, "Message timeout: no message received for " + elapsed + "ms");
+                    // 在主线程中断开连接并触发重连
+                    if (channel != null && channel.isActive()) {
+                        channel.close();
+                    }
+                }
+            }
+        }, MESSAGE_TIMEOUT, MESSAGE_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    //停止消息超时检测
+    private void stopMessageTimeoutCheck() {
+        if (timeoutCheckTask != null) {
+            timeoutCheckTask.cancel(false);
+            timeoutCheckTask = null;
+        }
+    }
+
+    //更新最后接收消息时间
+    private void updateLastMessageTime() {
+        lastMessageTime = System.currentTimeMillis();
+    }
+    //endregion
 }
