@@ -125,7 +125,6 @@ public class NettyClient {
                         isConnected.set(true);
                         isConnecting.set(false);
                         reconnectCount = 0;
-                        lastMessageTime = System.currentTimeMillis();
                         LogUtils.d(TAG, "Connected successfully");
                         //startHeartbeat();
                         startMessageTimeoutCheck();

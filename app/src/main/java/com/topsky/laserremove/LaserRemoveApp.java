@@ -14,13 +14,19 @@ import androidx.multidex.MultiDexApplication;
 import okhttp3.OkHttpClient;
 
 public class LaserRemoveApp extends MultiDexApplication {
+    private static LaserRemoveApp instance;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
         LogUtils.getConfig()
                 .setLogSwitch(BuildConfig.DEBUG);
         initNet();
+    }
+
+    public static LaserRemoveApp getInstance() {
+        return instance;
     }
 
     private void initNet() {

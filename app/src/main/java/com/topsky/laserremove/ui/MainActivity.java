@@ -26,6 +26,7 @@ import com.topsky.laserremove.constant.CommonData;
 import com.topsky.laserremove.databinding.ActivityMainBinding;
 import com.topsky.laserremove.enums.SpeedType;
 import com.topsky.laserremove.filter.TyPopCallBack;
+import com.topsky.laserremove.manager.DataJsonManager;
 import com.topsky.laserremove.viewModel.CameraViewModel;
 import com.topsky.laserremove.viewModel.CloudPlatformViewModel;
 import com.topsky.laserremove.viewModel.LaserControlViewModel;
@@ -60,6 +61,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         initViewModel();
         initFPV();
         initView();
+        initJsonData();
     }
 
     //region 初始化
@@ -392,7 +394,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                laserControlViewModel.setLaserDistance(value);
+                laserControlViewModel.sendLaserDistance(value);
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
             }
@@ -585,6 +587,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         //连接状态
         nettyViewModel.getConnected().observe(this, connected -> {
         });
+    }
+    //endregion
+
+    //region获取距离和脉冲之间关系的配置json
+    private void initJsonData() {
+        XXPermissions.with(this)
+                .permission(PermissionLists.getManageExternalStoragePermission())
+                .request((grantedList, deniedList) -> {
+                    if (deniedList.isEmpty()) {
+                        DataJsonManager.getInstance().getJsonFromLocal();
+                    }
+                });
     }
     //endregion
 

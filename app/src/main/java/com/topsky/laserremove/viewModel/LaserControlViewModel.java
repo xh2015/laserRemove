@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.topsky.laserremove.base.BaseViewModel;
+import com.topsky.laserremove.manager.DataJsonManager;
 import com.topsky.laserremove.net.netty.NettyManager;
 import com.topsky.laserremove.net.netty.NettyMessage;
 
@@ -57,18 +58,6 @@ public class LaserControlViewModel extends BaseViewModel {
         super(application);
     }
 
-    public void setLaserPower(int power) {
-        laserPower.postValue(power);
-    }
-
-    public void setLaserDistance(int distance) {
-        laserDistance.postValue(distance);
-    }
-
-    public void setLaserPulse(int pulse) {
-        laserPulse.postValue(pulse);
-    }
-
     public void handleNettyMessage(NettyMessage message) {
         if (message == null) {
             return;
@@ -115,7 +104,7 @@ public class LaserControlViewModel extends BaseViewModel {
 
     public void sendLaserSwitch(boolean isOn) {
         //byte[] data = new byte[]{ (byte) (isOn ? 0x01 : 0x00) };
-        byte[] data = new byte[]{ 0x02,0x00 };
+        byte[] data = new byte[]{ 0x02, 0x00 };
 
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_LASER_CONTROL,
@@ -152,6 +141,39 @@ public class LaserControlViewModel extends BaseViewModel {
                 data
         );
 
+        laserPulse.postValue(pulse);
+    }
+
+    //发送距离指令
+    public void sendLaserDistance(int distance) {
+        Integer value = DataJsonManager.getInstance().getValue(String.valueOf(distance));
+        if (value == null) {
+            return;
+        }
+        byte[] data = new byte[]{
+                (byte) ((value >> 24) & 0xFF),
+                (byte) ((value >> 16) & 0xFF),
+                (byte) ((value >> 8) & 0xFF),
+                (byte) (value & 0xFF)
+        };
+        NettyManager.getInstance().sendMessage(
+                NettyMessage.MODULE_LASER_CONTROL,
+                (byte) 0x03,
+                data
+        );
+
+        laserDistance.postValue(distance);
+    }
+
+    public void setLaserPower(int power) {
+        laserPower.postValue(power);
+    }
+
+    public void setLaserDistance(int distance) {
+        laserDistance.postValue(distance);
+    }
+
+    public void setLaserPulse(int pulse) {
         laserPulse.postValue(pulse);
     }
 }
