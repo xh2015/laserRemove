@@ -26,7 +26,7 @@ public class NettyClient {
     private static final String TAG = "NettyClient";
     // 服务器地址和端口
     private static final String DEFAULT_HOST = "192.168.1.33";
-    //private static final String DEFAULT_HOST = "192.168.0.9";
+    //private static final String DEFAULT_HOST = "192.168.0.2";
     private static final int DEFAULT_PORT = 8899;
     // 心跳间隔（秒）
     private static final int HEARTBEAT_INTERVAL = 30;
@@ -56,7 +56,7 @@ public class NettyClient {
     private volatile boolean heartbeatRunning = false;
 
     // 线程池
-    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(6);
 
     public NettyClient() {
         this(DEFAULT_HOST, DEFAULT_PORT);

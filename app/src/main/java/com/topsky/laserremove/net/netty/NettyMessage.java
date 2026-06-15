@@ -64,7 +64,7 @@ public class NettyMessage {
     /**
      * 模组代码 - 激光控制
      */
-    public static final byte MODULE_LASER_CONTROL = (byte) 0xF8;
+    public static final byte MODULE_LASER_CONTROL = (byte) 0xF3;
 
     // 帧头
     private byte header;

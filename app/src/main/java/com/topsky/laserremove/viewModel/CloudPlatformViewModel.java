@@ -34,8 +34,6 @@ public class CloudPlatformViewModel extends BaseViewModel {
             return;
         }
         
-        LogUtils.d(TAG, "Handling message: " + message);
-        
         byte moduleCode = message.getModuleCode();
         byte commandCode = message.getCommandCode();
         byte[] data = message.getData();

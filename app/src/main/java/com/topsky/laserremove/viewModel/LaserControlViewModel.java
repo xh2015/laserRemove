@@ -114,7 +114,8 @@ public class LaserControlViewModel extends BaseViewModel {
     }
 
     public void sendLaserSwitch(boolean isOn) {
-        byte[] data = new byte[]{ (byte) (isOn ? 0x01 : 0x00) };
+        //byte[] data = new byte[]{ (byte) (isOn ? 0x01 : 0x00) };
+        byte[] data = new byte[]{ 0x02,0x00 };
 
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_LASER_CONTROL,

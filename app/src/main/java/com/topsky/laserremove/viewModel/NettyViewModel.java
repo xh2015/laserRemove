@@ -105,15 +105,15 @@ public class NettyViewModel extends BaseViewModel implements INettyListener {
 
             byte moduleCode = message.getModuleCode();
 
-            if (moduleCode >= NettyMessage.MODULE_PTZ && moduleCode <= NettyMessage.MODULE_LASER_COMMAND) {
-                // 0xF0-0xF7: 云台相关消息
-                if (cloudPlatformViewModel != null) {
-                    cloudPlatformViewModel.handleNettyMessage(message);
-                }
-            } else if (moduleCode == NettyMessage.MODULE_LASER_CONTROL) {
-                // 0xF8: 激光控制消息
+            if (moduleCode == NettyMessage.MODULE_LASER_CONTROL) {
+                //0xF3: 激光控制消息
                 if (laserControlViewModel != null) {
                     laserControlViewModel.handleNettyMessage(message);
+                }
+            } else {
+                //云台相关消息
+                if (cloudPlatformViewModel != null) {
+                    cloudPlatformViewModel.handleNettyMessage(message);
                 }
             }
         });

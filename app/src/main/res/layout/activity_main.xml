@@ -30,7 +30,7 @@
             android:id="@+id/iv_crosshair"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_crosshair"
+            android:src="@drawable/ic_crosshair_new2"
             android:visibility="gone" />
 
     </FrameLayout>
@@ -579,7 +579,6 @@
         android:layout_height="80dp"
         android:layout_marginBottom="30dp"
         android:src="@drawable/selector_laser_switch"
-        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/ex_menu"
         app:layout_constraintRight_toRightOf="@id/ex_menu" />
 

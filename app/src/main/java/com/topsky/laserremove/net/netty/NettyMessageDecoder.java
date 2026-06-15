@@ -106,7 +106,7 @@ public class NettyMessageDecoder extends ByteToMessageDecoder {
                         NettyMessage message = NettyMessage.fromBytes(fullMessage);
                         if (message != null && message.validateChecksum()) {
                             out.add(message);
-                            LogUtils.d(TAG, "Decoded message: " + message);
+                            //LogUtils.d(TAG, "Decoded message: " + message);
                         } else {
                             LogUtils.e(TAG, "Checksum validation failed");
                         }
