@@ -15,13 +15,6 @@ import androidx.lifecycle.MutableLiveData;
 public class LaserControlViewModel extends BaseViewModel {
     private static final String TAG = "LaserControlViewModel";
 
-    // 激光连接状态
-    private final MutableLiveData<Boolean> laserConnectStatus = new MutableLiveData<>(false);
-
-    public LiveData<Boolean> getLaserConnectStatus() {
-        return laserConnectStatus;
-    }
-
     //功率
     private final MutableLiveData<Integer> laserPower = new MutableLiveData<>(10);
 
@@ -48,10 +41,6 @@ public class LaserControlViewModel extends BaseViewModel {
 
     public LiveData<Boolean> getLaserSwitchStatus() {
         return laserSwitchStatus;
-    }
-
-    public void setLaserConnectStatus(boolean isConnected) {
-        laserConnectStatus.postValue(isConnected);
     }
 
     public LaserControlViewModel(@NonNull Application application) {

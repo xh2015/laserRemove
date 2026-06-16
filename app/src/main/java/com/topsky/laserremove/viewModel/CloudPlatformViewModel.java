@@ -8,36 +8,23 @@ import com.topsky.laserremove.net.netty.NettyManager;
 import com.topsky.laserremove.net.netty.NettyMessage;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 public class CloudPlatformViewModel extends BaseViewModel {
     private static final String TAG = "CloudPlatformViewModel";
-    
-    // 云台连接状态
-    private final MutableLiveData<Boolean> cpConnectStatus = new MutableLiveData<>(false);
-
-    public LiveData<Boolean> getCpConnectStatus() {
-        return cpConnectStatus;
-    }
 
     public CloudPlatformViewModel(@NonNull Application application) {
         super(application);
-    }
-
-    public void setCpConnectStatus(boolean isConnected) {
-        cpConnectStatus.postValue(isConnected);
     }
 
     public void handleNettyMessage(NettyMessage message) {
         if (message == null) {
             return;
         }
-        
+
         byte moduleCode = message.getModuleCode();
         byte commandCode = message.getCommandCode();
         byte[] data = message.getData();
-        
+
         // 根据模组代码和指令代码处理消息
         switch (moduleCode) {
             case NettyMessage.MODULE_PTZ:
@@ -141,7 +128,7 @@ public class CloudPlatformViewModel extends BaseViewModel {
             default:
                 commandCode = (byte) 0x00;
         }
-        
+
         // 发送指令
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_PTZ,

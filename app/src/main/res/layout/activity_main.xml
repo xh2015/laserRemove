@@ -219,7 +219,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -237,7 +236,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -255,7 +253,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -273,7 +270,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -291,7 +287,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -309,7 +304,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -569,7 +563,6 @@
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_marginEnd="15dp"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/ll_camera_menus_left"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -587,7 +580,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="130dp"
         android:layout_marginBottom="110dp"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -626,6 +618,5 @@
             android:textSize="11sp" />
 
     </RadioGroup>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

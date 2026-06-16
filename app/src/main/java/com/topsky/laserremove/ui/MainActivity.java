@@ -302,11 +302,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //region 云台
     //标定A
     private void markPoint(boolean pointA) {
-        cloudPlatformViewModel.setCpConnectStatus(pointA);
     }
 
     private void moveToPoint(boolean toA) {
-        laserControlViewModel.setLaserConnectStatus(toA);
     }
 
     //云台方向控制
@@ -316,11 +314,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     private void setupCloudPlatformObservers() {
-        //观察云平台连接状态
-        cloudPlatformViewModel.getCpConnectStatus().observe(this, isConnected -> {
-            binding.tvCloudConnectState.setText(isConnected ? R.string.ty_connected : R.string.ty_unconnect);
-            binding.tvCloudConnectState.setTextColor(ColorUtils.getColor(isConnected ? R.color.color_connected : R.color.color_unconnect));
-        });
+        //观察云平台
     }
     //endregion
 
@@ -336,12 +330,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     @SuppressLint("SetTextI18n")
     private void setupLaserControlObservers() {
-        //观察云平台连接状态
-        laserControlViewModel.getLaserConnectStatus().observe(this, isConnected -> {
-            binding.tvLaserConnectState.setText(isConnected ? R.string.ty_connected : R.string.ty_unconnect);
-            binding.tvLaserConnectState.setTextColor(ColorUtils.getColor(isConnected ? R.color.color_connected : R.color.color_unconnect));
-        });
-
         //激光功率
         laserControlViewModel.getLaserPower().observe(this, power -> {
             binding.tvPowerPercent.setText(power + "%");
@@ -586,6 +574,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void setupNettyObservers() {
         //连接状态
         nettyViewModel.getConnected().observe(this, connected -> {
+            binding.tvCloudConnectState.setText(connected ? R.string.ty_connected : R.string.ty_unconnect);
+            binding.tvCloudConnectState.setTextColor(ColorUtils.getColor(connected ? R.color.color_connected : R.color.color_unconnect));
+            binding.tvLaserConnectState.setText(connected ? R.string.ty_connected : R.string.ty_unconnect);
+            binding.tvLaserConnectState.setTextColor(ColorUtils.getColor(connected ? R.color.color_connected : R.color.color_unconnect));
         });
     }
     //endregion
