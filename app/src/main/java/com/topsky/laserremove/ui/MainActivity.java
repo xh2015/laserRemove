@@ -1,8 +1,6 @@
 package com.topsky.laserremove.ui;
 
 import android.annotation.SuppressLint;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -12,7 +10,6 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ColorUtils;
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.hjq.permissions.XXPermissions;
@@ -131,6 +128,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             settingLaserDistance();
         } else if (v.getId() == R.id.btn_pulse_setting) {
             settingLaserPulse();
+        } else if (v.getId() == R.id.btn_focus_near) {
+            changeLaserFocus(true);
+        } else if (v.getId() == R.id.btn_focus_far) {
+            changeLaserFocus(false);
         } else if (v.getId() == R.id.iv_laser_switch) {
             laserSwitch();
         } else if (v.getId() == R.id.btn_up) {
@@ -328,6 +329,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //region 云台
     //标定A
     private void markPoint(boolean pointA) {
+        if (cloudPlatformViewModel != null) {
+            cloudPlatformViewModel.controlCpMark(pointA);
+        }
     }
 
     private void moveToPoint(boolean toA) {
@@ -336,7 +340,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //云台方向控制
     @Override
     public void onStatesChange(int direction, boolean isPress) {
-        cloudPlatformViewModel.controlCpDirection(direction, isPress);
+        cloudPlatformViewModel.controlCpDirection(direction, isPress, speedType);
     }
 
     private void setupCloudPlatformObservers() {
@@ -348,6 +352,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
         cloudPlatformViewModel.getVoltage().observe(this, voltage -> {
             binding.tvVoltage.setText(String.format(getString(R.string.ty_voltage), voltage));
+            if (voltage <= 28) {
+                binding.tvVoltage.setTextColor(ColorUtils.getColor(R.color.color_red));
+            } else {
+                binding.tvVoltage.setTextColor(ColorUtils.getColor(R.color.white));
+            }
         });
     }
     //endregion
@@ -506,7 +515,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     private void changeSpeedType(@SpeedType int type) {
         speedType = type;
-        LogUtils.d("切换速度模式: " + type);
     }
     //endregion
 
@@ -556,13 +564,15 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //region 激光焦距 调焦
     private DistanceInputConfirmPopupView distanceInputConfirmPopupView;
-    private Handler focusHandler;
+    /*private Handler focusHandler;
     private Runnable focusRunnable;
     private boolean isFocusing;
-    private boolean focusNear;
+    private boolean focusNear;*/
 
     private void initLaserFocus() {
-        focusHandler = new Handler(Looper.getMainLooper());
+        binding.btnFocusNear.setOnClickListener(this);
+        binding.btnFocusFar.setOnClickListener(this);
+        /*focusHandler = new Handler(Looper.getMainLooper());
         focusRunnable = new Runnable() {
             @Override
             public void run() {
@@ -603,10 +613,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 }
                 return false;
             }
-        });
+        });*/
     }
 
-    private void startFocusRepeat(boolean near) {
+    /*private void startFocusRepeat(boolean near) {
         stopFocusRepeat();
 
         isFocusing = true;
@@ -621,7 +631,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         if (focusHandler != null && focusRunnable != null) {
             focusHandler.removeCallbacks(focusRunnable);
         }
-    }
+    }*/
 
     private void changeLaserFocus(boolean near) {
         if (laserFocusViewModel != null) {
@@ -714,6 +724,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     protected void onDestroy() {
         super.onDestroy();
         binding.fpvWidget.stop();
+
+        /*stopFocusRepeat();
+        if (focusHandler != null) {
+            focusHandler.removeCallbacksAndMessages(null);
+        }*/
 
         // 解绑Netty服务
         if (nettyViewModel != null) {

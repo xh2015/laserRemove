@@ -1,9 +1,12 @@
 package com.topsky.laserremove.viewModel;
 
 import android.app.Application;
+import android.widget.Toast;
 
-import com.blankj.utilcode.util.LogUtils;
+import com.topsky.laserremove.LaserRemoveApp;
+import com.topsky.laserremove.R;
 import com.topsky.laserremove.base.BaseViewModel;
+import com.topsky.laserremove.enums.SpeedType;
 import com.topsky.laserremove.net.netty.NettyManager;
 import com.topsky.laserremove.net.netty.NettyMessage;
 
@@ -13,7 +16,6 @@ import androidx.lifecycle.MutableLiveData;
 
 public class CloudPlatformViewModel extends BaseViewModel {
     private static final String TAG = "CloudPlatformViewModel";
-
     // 连接状态
     private final MutableLiveData<Boolean> connected = new MutableLiveData<>(false);
 
@@ -22,14 +24,23 @@ public class CloudPlatformViewModel extends BaseViewModel {
     }
 
     // 电压
-    private final MutableLiveData<Integer> voltage = new MutableLiveData<>(0);
+    private final MutableLiveData<Float> voltage = new MutableLiveData<>(0f);
 
-    public LiveData<Integer> getVoltage() {
+    public LiveData<Float> getVoltage() {
         return voltage;
     }
 
     public CloudPlatformViewModel(@NonNull Application application) {
         super(application);
+    }
+
+    private boolean connectedTip() {
+        Boolean value = connected.getValue();
+        if (value == null || !value) {
+            Toast.makeText(LaserRemoveApp.getInstance(), R.string.ty_cloud_disconnect, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     public void onControlSendSuccess() {
@@ -40,7 +51,7 @@ public class CloudPlatformViewModel extends BaseViewModel {
         this.connected.setValue(connected);
     }
 
-    public void onVoltageChange(int voltage) {
+    public void onVoltageChange(float voltage) {
         this.voltage.setValue(voltage);
     }
 
@@ -48,120 +59,66 @@ public class CloudPlatformViewModel extends BaseViewModel {
         if (message == null) {
             return;
         }
-
-        byte moduleCode = message.getModuleCode();
-        byte commandCode = message.getCommandCode();
-        byte[] data = message.getData();
-
-        // 根据模组代码和指令代码处理消息
-        switch (moduleCode) {
-            case NettyMessage.MODULE_PTZ:
-                handlePtzMessage(commandCode, data);
-                break;
-            case NettyMessage.MODULE_LASER_DISTANCE:
-                handleLaserDistanceMessage(commandCode, data);
-                break;
-            case NettyMessage.MODULE_LASER_INDICATOR:
-                handleLaserIndicatorMessage(commandCode, data);
-                break;
-            case NettyMessage.MODULE_HUMAN_SENSOR:
-                handleHumanSensorMessage(commandCode, data);
-                break;
-            case NettyMessage.MODULE_ACCELEROMETER:
-                handleAccelerometerMessage(commandCode, data);
-                break;
-            case NettyMessage.MODULE_LASER_FOCUS:
-                handleLaserFocusMessage(commandCode, data);
-                break;
-            case NettyMessage.MODULE_LASER_COMMAND:
-                handleLaserCommandMessage(commandCode, data);
-                break;
-            default:
-                LogUtils.w(TAG, "Unknown module code: " + String.format("0x%02X", moduleCode));
-        }
-    }
-
-    //处理云台消息
-    private void handlePtzMessage(byte commandCode, byte[] data) {
-        LogUtils.d(TAG, "PTZ message, command: " + String.format("0x%02X", commandCode));
-        // 根据指令代码处理云台控制逻辑
-        switch (commandCode) {
-            case 0x00:
-                // 停止转动
-                break;
-            case 0x01:
-                // 向上
-                break;
-            case 0x02:
-                // 向下
-                break;
-            case 0x03:
-                // 向左
-                break;
-            case 0x04:
-                // 向右
-                break;
-            default:
-                LogUtils.w(TAG, "Unknown PTZ command: " + String.format("0x%02X", commandCode));
-        }
-    }
-
-    //处理激光测距消息
-    private void handleLaserDistanceMessage(byte commandCode, byte[] data) {
-        LogUtils.d(TAG, "Laser distance message, command: " + String.format("0x%02X", commandCode));
-        // 解析测距数据等
-    }
-
-    //处理激光指示消息
-    private void handleLaserIndicatorMessage(byte commandCode, byte[] data) {
-        LogUtils.d(TAG, "Laser indicator message, command: " + String.format("0x%02X", commandCode));
-    }
-
-    //处理人体感应消息
-    private void handleHumanSensorMessage(byte commandCode, byte[] data) {
-        LogUtils.d(TAG, "Human sensor message, command: " + String.format("0x%02X", commandCode));
-    }
-
-    //处理加速度计消息
-    private void handleAccelerometerMessage(byte commandCode, byte[] data) {
-        LogUtils.d(TAG, "Accelerometer message, command: " + String.format("0x%02X", commandCode));
-    }
-
-    //处理激光调焦消息
-    private void handleLaserFocusMessage(byte commandCode, byte[] data) {
-        LogUtils.d(TAG, "Laser focus message, command: " + String.format("0x%02X", commandCode));
-    }
-
-    //处理激光指令消息
-    private void handleLaserCommandMessage(byte commandCode, byte[] data) {
     }
 
     //region 云台方向控制 发送转动 0下 1左 2上 3右
-    public void controlCpDirection(int direction, boolean isPress) {
+    public void controlCpDirection(int direction, boolean isPress, @SpeedType int speedType) {
+        /*if (!connectedTip()) {
+            return;
+        }*/
         // 构建云台控制指令
-        byte commandCode;
+        byte[] data = new byte[3];
+        byte[] dataStop = new byte[1];
+        data[2] = speedType == SpeedType.SLOW ? (byte) 0x00 : (speedType == SpeedType.MIDDLE ? (byte) 0x01 : (byte) 0x02);
         switch (direction) {
             case 0: // 下
-                commandCode = isPress ? (byte) 0x02 : (byte) 0x00;
+                data[0] = (byte) 0x01;
+                dataStop[0] = (byte) 0x01;
+                data[1] = (byte) 0x01;
                 break;
             case 1: // 左
-                commandCode = isPress ? (byte) 0x03 : (byte) 0x00;
+                data[0] = (byte) 0x00;
+                dataStop[0] = (byte) 0x00;
+                data[1] = (byte) 0x01;
                 break;
             case 2: // 上
-                commandCode = isPress ? (byte) 0x01 : (byte) 0x00;
+                data[0] = (byte) 0x01;
+                dataStop[0] = (byte) 0x01;
+                data[1] = (byte) 0x00;
                 break;
             case 3: // 右
-                commandCode = isPress ? (byte) 0x04 : (byte) 0x00;
+                data[0] = (byte) 0x00;
+                dataStop[0] = (byte) 0x00;
+                data[1] = (byte) 0x00;
                 break;
-            default:
-                commandCode = (byte) 0x00;
         }
-
         // 发送指令
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_PTZ,
-                commandCode,
-                null
+                isPress ? (byte) 0x01 : (byte) 0x03,
+                isPress ? data : dataStop
+        );
+    }
+    //endregion
+
+    //region标记A B点
+    private boolean isMarking = false;
+
+    public void controlCpMark(boolean isMarkA) {
+        if (isMarking) {
+            Toast.makeText(LaserRemoveApp.getInstance(), R.string.ty_cloud_mark_tip, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        NettyManager.getInstance().sendMessage(
+                NettyMessage.MODULE_PTZ,
+                (byte) 0x07,
+                new byte[]{ (byte) 0x00 }
+        );
+
+        NettyManager.getInstance().sendMessage(
+                NettyMessage.MODULE_PTZ,
+                (byte) 0x07,
+                new byte[]{ (byte) 0x01 }
         );
     }
     //endregion
