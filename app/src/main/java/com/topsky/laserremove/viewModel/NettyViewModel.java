@@ -108,6 +108,25 @@ public class NettyViewModel extends BaseViewModel implements INettyListener {
                 byte commandCode = message.getCommandCode();
                 if (commandCode == 0x01) {
                     //周期性上报数据
+                    byte[] data = message.getData();
+                    if (data.length < 5) {
+                        return;
+                    }
+                    //电压
+                    byte big = data[0];
+                    byte small = data[1];
+                    int value = ((big & 0xFF) << 8) | (small & 0xFF);
+                    float voltage = value / 1000f;
+
+                    if (cloudPlatformViewModel != null) {
+                        cloudPlatformViewModel.onVoltageChange(Math.round(voltage));
+                    }
+
+                    boolean cloudPlatformConnected = data[4] == 0x01;
+                    if (cloudPlatformViewModel != null) {
+                        cloudPlatformViewModel.onConnectedChange(cloudPlatformConnected);
+                    }
+
                 } else if (commandCode == 0x02) {
                     //控制指令响应
                     byte[] data = message.getData();
@@ -140,8 +159,8 @@ public class NettyViewModel extends BaseViewModel implements INettyListener {
                     if (laserControlViewModel != null) {
                         laserControlViewModel.handleNettyMessage(message);
                     }
-                } else if (moduleCode == NettyMessage.MODULE_LASER_FOCUS) {
-                    //0xF6: 激光焦距
+                } else if (moduleCode == NettyMessage.MODULE_LASER_FOCUS || moduleCode == NettyMessage.MODULE_LASER_DISTANCE) {
+                    //0xF6: 激光焦距 获取距离
                     if (laserFocusViewModel != null) {
                         laserFocusViewModel.handleNettyMessage(message);
                     }

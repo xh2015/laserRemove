@@ -33,11 +33,7 @@ public class NettyMessageDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-
         if (BuildConfig.DEBUG) {
-            // 打印当前可读字节数
-            LogUtils.d(TAG, "Available bytes: " + in.readableBytes());
-
             // 标记读索引,方便查看数据
             in.markReaderIndex();
 

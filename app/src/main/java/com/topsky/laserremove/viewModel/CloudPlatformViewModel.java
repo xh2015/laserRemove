@@ -8,9 +8,25 @@ import com.topsky.laserremove.net.netty.NettyManager;
 import com.topsky.laserremove.net.netty.NettyMessage;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 public class CloudPlatformViewModel extends BaseViewModel {
     private static final String TAG = "CloudPlatformViewModel";
+
+    // 连接状态
+    private final MutableLiveData<Boolean> connected = new MutableLiveData<>(false);
+
+    public LiveData<Boolean> getConnected() {
+        return connected;
+    }
+
+    // 电压
+    private final MutableLiveData<Integer> voltage = new MutableLiveData<>(0);
+
+    public LiveData<Integer> getVoltage() {
+        return voltage;
+    }
 
     public CloudPlatformViewModel(@NonNull Application application) {
         super(application);
@@ -18,6 +34,14 @@ public class CloudPlatformViewModel extends BaseViewModel {
 
     public void onControlSendSuccess() {
 
+    }
+
+    public void onConnectedChange(boolean connected) {
+        this.connected.setValue(connected);
+    }
+
+    public void onVoltageChange(int voltage) {
+        this.voltage.setValue(voltage);
     }
 
     public void handleNettyMessage(NettyMessage message) {

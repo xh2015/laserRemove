@@ -327,6 +327,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     private void setupCloudPlatformObservers() {
         //观察云平台
+        cloudPlatformViewModel.getConnected().observe(this, connected -> {
+            binding.tvCloudConnectState.setText(connected ? R.string.ty_connected : R.string.ty_unconnect);
+            binding.tvCloudConnectState.setTextColor(ColorUtils.getColor(connected ? R.color.color_connected : R.color.color_unconnect));
+        });
+
+        cloudPlatformViewModel.getVoltage().observe(this, voltage -> {
+            binding.tvVoltage.setText(String.format(getString(R.string.ty_voltage), voltage));
+        });
     }
     //endregion
 
@@ -514,8 +522,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void setupNettyObservers() {
         //连接状态
         nettyViewModel.getConnected().observe(this, connected -> {
-            binding.tvCloudConnectState.setText(connected ? R.string.ty_connected : R.string.ty_unconnect);
-            binding.tvCloudConnectState.setTextColor(ColorUtils.getColor(connected ? R.color.color_connected : R.color.color_unconnect));
             binding.tvLaserConnectState.setText(connected ? R.string.ty_connected : R.string.ty_unconnect);
             binding.tvLaserConnectState.setTextColor(ColorUtils.getColor(connected ? R.color.color_connected : R.color.color_unconnect));
         });

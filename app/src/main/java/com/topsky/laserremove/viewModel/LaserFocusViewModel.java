@@ -37,6 +37,31 @@ public class LaserFocusViewModel extends BaseViewModel {
         if (message == null) {
             return;
         }
+        byte moduleCode = message.getModuleCode();
+        if (moduleCode == NettyMessage.MODULE_LASER_DISTANCE) {
+            byte commandCode = message.getCommandCode();
+            if (commandCode != 0x01) {
+                return;
+            }
+
+            byte[] data = message.getData();
+            if (data.length < 3) {
+                return;
+            }
+            boolean effective = data[0] == 0x00;
+            if (!effective) {
+                return;
+            }
+            byte big = data[1];
+            byte small = data[2];
+            if ((big & 0xFF) == 0xFF && (small & 0xFF) == 0xFF) {
+                return;
+            }
+            int value = ((big & 0xFF) << 8) | (small & 0xFF);
+            float distance = value / 10f;
+            laserDistance.postValue(Math.round(distance));
+        }
+
     }
 
     //获取距离
