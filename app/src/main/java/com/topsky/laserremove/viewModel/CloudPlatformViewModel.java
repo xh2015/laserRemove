@@ -9,6 +9,7 @@ import com.topsky.laserremove.base.BaseViewModel;
 import com.topsky.laserremove.enums.SpeedType;
 import com.topsky.laserremove.net.netty.NettyManager;
 import com.topsky.laserremove.net.netty.NettyMessage;
+import com.topsky.laserremove.net.netty.NettyMessageUtils;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -59,6 +60,31 @@ public class CloudPlatformViewModel extends BaseViewModel {
         if (message == null) {
             return;
         }
+
+        byte moduleCode = message.getModuleCode();
+        byte commandCode = message.getCommandCode();
+        if (moduleCode == NettyMessage.MODULE_PTZ && commandCode == 0x08) {
+            //获取角度
+            byte[] data = message.getData();
+            if (data.length >= 5) {
+                boolean axisY = data[0] == 0x01;
+                byte[] bytes = NettyMessageUtils.subArray(data, 1, 4);
+                int value = NettyMessageUtils.bytesToInt(bytes);
+                if (axisY) {
+                    if (isMarkA) {
+                        axisYA = value;
+                    } else {
+                        axisYB = value;
+                    }
+                } else {
+                    if (isMarkA) {
+                        axisXA = value;
+                    } else {
+                        axisXB = value;
+                    }
+                }
+            }
+        }
     }
 
     //region 云台方向控制 发送转动 0下 1左 2上 3右
@@ -102,13 +128,14 @@ public class CloudPlatformViewModel extends BaseViewModel {
     //endregion
 
     //region标记A B点
-    private boolean isMarking = false;
+    private boolean isMarkA = false;
+    private int axisXA;
+    private int axisYA;
+    private int axisXB;
+    private int axisYB;
 
     public void controlCpMark(boolean isMarkA) {
-        if (isMarking) {
-            Toast.makeText(LaserRemoveApp.getInstance(), R.string.ty_cloud_mark_tip, Toast.LENGTH_SHORT).show();
-            return;
-        }
+        this.isMarkA = isMarkA;
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_PTZ,
                 (byte) 0x07,
@@ -119,6 +146,42 @@ public class CloudPlatformViewModel extends BaseViewModel {
                 NettyMessage.MODULE_PTZ,
                 (byte) 0x07,
                 new byte[]{ (byte) 0x01 }
+        );
+    }
+    //endregion
+
+    // region 移动到A B点
+    public void controlMoveMark(boolean isPointA) {
+        byte[] dataX = new byte[5];
+        dataX[0] = (byte) 0x00;
+        byte[] bytesX;
+        if (isPointA) {
+            bytesX = NettyMessageUtils.intToBytes(axisXA);
+        } else {
+            bytesX = NettyMessageUtils.intToBytes(axisXB);
+        }
+        System.arraycopy(bytesX, 0, dataX, 1, 4);
+
+        byte[] dataY = new byte[5];
+        dataY[0] = (byte) 0x01;
+        byte[] bytesY;
+        if (isPointA) {
+            bytesY = NettyMessageUtils.intToBytes(axisYA);
+        } else {
+            bytesY = NettyMessageUtils.intToBytes(axisYB);
+        }
+        System.arraycopy(bytesY, 0, dataY, 1, 4);
+
+        NettyManager.getInstance().sendMessage(
+                NettyMessage.MODULE_PTZ,
+                (byte) 0x04,
+                dataX
+        );
+
+        NettyManager.getInstance().sendMessage(
+                NettyMessage.MODULE_PTZ,
+                (byte) 0x04,
+                dataY
         );
     }
     //endregion

@@ -335,6 +335,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     private void moveToPoint(boolean toA) {
+        if (cloudPlatformViewModel != null) {
+            cloudPlatformViewModel.controlMoveMark(toA);
+        }
     }
 
     //云台方向控制

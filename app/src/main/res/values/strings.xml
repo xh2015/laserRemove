@@ -51,5 +51,5 @@
     <string name="ty_take_distance">获取距离</string>
     <string name="ty_voltage">电压：%.1fV</string>
     <string name="ty_cloud_disconnect">请先连接云台</string>
-    <string name="ty_cloud_mark_tip">ty_正在标记中，请稍后</string>
+    <string name="ty_cloud_mark_tip">正在标记中，请稍后</string>
 </resources>

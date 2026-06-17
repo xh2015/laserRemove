@@ -77,7 +77,11 @@ public class NettyViewModel extends BaseViewModel implements INettyListener {
     //解绑Netty服务
     public void unbindService() {
         if (serviceBound.getValue() != null && serviceBound.getValue()) {
-            getApplication().unbindService(serviceConnection);
+            try {
+                getApplication().unbindService(serviceConnection);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             serviceBound.postValue(false);
         }
     }
@@ -164,7 +168,7 @@ public class NettyViewModel extends BaseViewModel implements INettyListener {
                     if (laserFocusViewModel != null) {
                         laserFocusViewModel.handleNettyMessage(message);
                     }
-                } else {
+                } else if (moduleCode == NettyMessage.MODULE_PTZ) {
                     //云台相关消息
                     if (cloudPlatformViewModel != null) {
                         cloudPlatformViewModel.handleNettyMessage(message);

@@ -7,6 +7,7 @@ import com.topsky.laserremove.base.BaseViewModel;
 import com.topsky.laserremove.manager.DataJsonManager;
 import com.topsky.laserremove.net.netty.NettyManager;
 import com.topsky.laserremove.net.netty.NettyMessage;
+import com.topsky.laserremove.net.netty.NettyMessageUtils;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -89,13 +90,12 @@ public class LaserFocusViewModel extends BaseViewModel {
     }
 
     public void sendLaserPulse(int pulse, int distance) {
-        byte[] data = new byte[]{
-                (byte) ((pulse >> 24) & 0xFF),
-                (byte) ((pulse >> 16) & 0xFF),
-                (byte) ((pulse >> 8) & 0xFF),
-                (byte) (pulse & 0xFF),
-                (byte) 0x00
-        };
+        byte[] bytes = NettyMessageUtils.intToBytes(pulse);
+
+        byte[] data = new byte[5];
+        System.arraycopy(bytes, 0, data, 0, 4);
+        data[4] = (byte) 0x00;
+
         if (distance <= 0) {
             fromDistance = false;
             this.distance = null;
