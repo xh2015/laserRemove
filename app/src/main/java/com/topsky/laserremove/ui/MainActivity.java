@@ -1,6 +1,8 @@
 package com.topsky.laserremove.ui;
 
 import android.annotation.SuppressLint;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -45,7 +47,6 @@ import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, VideoDecoderCallBack, PanelView.PanelListener {
-
     private RecordViewModel recordViewModel;
     private ScreenshotViewModel screenshotViewModel;
     private CameraViewModel cameraViewModel;
@@ -86,6 +87,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         initTouchCustomViewCamera();
         initCrosshair();
         initSpeedView();
+        initLaserFocus();
     }
 
     private void initFPV() {
@@ -181,13 +183,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //同时分发给录像和截图 ViewModel
     @Override
     public void onYUV(@NonNull ByteBuffer data, int width, int height, int pixel_format) {
-        recordViewModel.updateFrameData(data, width, height, pixel_format);
-        screenshotViewModel.updateFrameData(data, width, height, pixel_format);
+        if (recordViewModel != null) {
+            recordViewModel.updateFrameData(data, width, height, pixel_format);
+        }
+        if (screenshotViewModel != null) {
+            screenshotViewModel.updateFrameData(data, width, height, pixel_format);
+        }
     }
 
     //录像
     private void handleRecordClick() {
-        if (Boolean.TRUE.equals(recordViewModel.getIsRecording().getValue())) {
+        if (recordViewModel != null && Boolean.TRUE.equals(recordViewModel.getIsRecording().getValue())) {
             recordViewModel.stopRecord();
         } else {
             checkPermissionAndRecord();
@@ -196,13 +202,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     private void checkPermissionAndRecord() {
         if (XXPermissions.isGrantedPermission(this, PermissionLists.getManageExternalStoragePermission())) {
-            recordViewModel.startRecord();
+            if (recordViewModel != null) {
+                recordViewModel.startRecord();
+            }
         } else {
             XXPermissions.with(this)
                     .permission(PermissionLists.getManageExternalStoragePermission())
                     .request((grantedList, deniedList) -> {
                         if (deniedList.isEmpty()) {
-                            recordViewModel.startRecord();
+                            if (recordViewModel != null) {
+                                recordViewModel.startRecord();
+                            }
                         }
                     });
         }
@@ -211,13 +221,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //拍照
     private void checkPermissionAndCaptureImage() {
         if (XXPermissions.isGrantedPermission(this, PermissionLists.getManageExternalStoragePermission())) {
-            screenshotViewModel.takeScreenshot();
+            if (screenshotViewModel != null) {
+                screenshotViewModel.takeScreenshot();
+            }
         } else {
             XXPermissions.with(this)
                     .permission(PermissionLists.getManageExternalStoragePermission())
                     .request((grantedList, deniedList) -> {
                         if (deniedList.isEmpty()) {
-                            screenshotViewModel.takeScreenshot();
+                            if (screenshotViewModel != null) {
+                                screenshotViewModel.takeScreenshot();
+                            }
                         }
                     });
         }
@@ -542,6 +556,78 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //region 激光焦距 调焦
     private DistanceInputConfirmPopupView distanceInputConfirmPopupView;
+    private Handler focusHandler;
+    private Runnable focusRunnable;
+    private boolean isFocusing;
+    private boolean focusNear;
+
+    private void initLaserFocus() {
+        focusHandler = new Handler(Looper.getMainLooper());
+        focusRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (isFocusing) {
+                    changeLaserFocus(focusNear);
+                    focusHandler.postDelayed(this, 500);
+                }
+            }
+        };
+
+        binding.btnFocusNear.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startFocusRepeat(true);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        stopFocusRepeat();
+                        break;
+                }
+                return false;
+            }
+        });
+
+        binding.btnFocusFar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startFocusRepeat(false);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        stopFocusRepeat();
+                        break;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void startFocusRepeat(boolean near) {
+        stopFocusRepeat();
+
+        isFocusing = true;
+        focusNear = near;
+
+        changeLaserFocus(near);
+        focusHandler.postDelayed(focusRunnable, 500);
+    }
+
+    private void stopFocusRepeat() {
+        isFocusing = false;
+        if (focusHandler != null && focusRunnable != null) {
+            focusHandler.removeCallbacks(focusRunnable);
+        }
+    }
+
+    private void changeLaserFocus(boolean near) {
+        if (laserFocusViewModel != null) {
+            laserFocusViewModel.changeLaserFocus(near);
+        }
+    }
 
     private void setupLaserFocusObservers() {
         //激光距离

@@ -2,6 +2,7 @@ package com.topsky.laserremove.viewModel;
 
 import android.app.Application;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.topsky.laserremove.base.BaseViewModel;
 import com.topsky.laserremove.manager.DataJsonManager;
 import com.topsky.laserremove.net.netty.NettyManager;
@@ -31,6 +32,7 @@ public class LaserFocusViewModel extends BaseViewModel {
         if (fromDistance && distance != null) {
             laserDistance.postValue(distance);
         }
+        LogUtils.d("激光测距指令发送成功并响应");
     }
 
     public void handleNettyMessage(NettyMessage message) {
@@ -105,6 +107,15 @@ public class LaserFocusViewModel extends BaseViewModel {
                 NettyMessage.MODULE_LASER_FOCUS,
                 (byte) 0x01,
                 data
+        );
+    }
+
+    //近焦 远焦
+    public void changeLaserFocus(boolean near) {
+        NettyManager.getInstance().sendMessage(
+                NettyMessage.MODULE_LASER_FOCUS,
+                (byte) 0x02,
+                new byte[]{ near ? (byte) 0x01 : (byte) 0x00, (byte) 0x00 }
         );
     }
 }

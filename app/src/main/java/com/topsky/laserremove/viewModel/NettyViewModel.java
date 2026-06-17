@@ -116,7 +116,7 @@ public class NettyViewModel extends BaseViewModel implements INettyListener {
                     byte big = data[0];
                     byte small = data[1];
                     int value = ((big & 0xFF) << 8) | (small & 0xFF);
-                    float voltage = value / 1000f;
+                    float voltage = value / 10f;
 
                     if (cloudPlatformViewModel != null) {
                         cloudPlatformViewModel.onVoltageChange(Math.round(voltage));
