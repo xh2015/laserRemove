@@ -165,7 +165,6 @@ public class NettyClient {
 
     //发送消息
     public void sendMessage(final NettyMessage message) {
-        LogUtils.d(TAG, "Sending message: " + message);
         if (!isConnected.get() || channel == null) {
             LogUtils.e(TAG, "Not connected, cannot send message");
             if (listener != null) {
@@ -352,7 +351,7 @@ public class NettyClient {
 
         @Override
         public void channelRead0(ChannelHandlerContext ctx, NettyMessage msg) {
-            LogUtils.d(TAG, "Message received: " + msg);
+            //LogUtils.d(TAG, "Message received: " + msg);
 
             // 更新最后接收消息时间
             updateLastMessageTime();

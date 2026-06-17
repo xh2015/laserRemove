@@ -30,9 +30,11 @@ import com.topsky.laserremove.manager.DataJsonManager;
 import com.topsky.laserremove.viewModel.CameraViewModel;
 import com.topsky.laserremove.viewModel.CloudPlatformViewModel;
 import com.topsky.laserremove.viewModel.LaserControlViewModel;
+import com.topsky.laserremove.viewModel.LaserFocusViewModel;
 import com.topsky.laserremove.viewModel.NettyViewModel;
 import com.topsky.laserremove.viewModel.RecordViewModel;
 import com.topsky.laserremove.viewModel.ScreenshotViewModel;
+import com.topsky.laserremove.widget.DistanceInputConfirmPopupView;
 import com.topsky.laserremove.widget.PanelView;
 
 import java.nio.ByteBuffer;
@@ -47,9 +49,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private RecordViewModel recordViewModel;
     private ScreenshotViewModel screenshotViewModel;
     private CameraViewModel cameraViewModel;
+    private NettyViewModel nettyViewModel;
     private CloudPlatformViewModel cloudPlatformViewModel;
     private LaserControlViewModel laserControlViewModel;
-    private NettyViewModel nettyViewModel;
+    private LaserFocusViewModel laserFocusViewModel;
 
     @Override
     protected ActivityMainBinding initViewBinding(LayoutInflater inflater) {
@@ -152,6 +155,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         cameraViewModel = new ViewModelProvider(this).get(CameraViewModel.class);
         cloudPlatformViewModel = new ViewModelProvider(this).get(CloudPlatformViewModel.class);
         laserControlViewModel = new ViewModelProvider(this).get(LaserControlViewModel.class);
+        laserFocusViewModel = new ViewModelProvider(this).get(LaserFocusViewModel.class);
         cameraViewModel.setLifecycleOwner(this);
         initNettyViewModel();
         setupObservers();
@@ -167,6 +171,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         setupCloudPlatformObservers();
         //激光器
         setupLaserControlObservers();
+        //激光焦距
+        setupLaserFocusObservers();
     }
     //endregion
 
@@ -261,6 +267,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //endregion
 
     //region 相机变倍
+    private void setupCameraObservers() {
+        cameraViewModel.getCameraZoom().observe(this, zoom -> {
+            binding.tvLightTimes.setText(zoom);
+        });
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private void initTouchCustomViewCamera() {
         binding.btnZoomBig.setOnTouchListener(new View.OnTouchListener() {
@@ -328,21 +340,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         laserControlViewModel.sendLaserSwitch(laserOn);
     }
 
-    @SuppressLint("SetTextI18n")
     private void setupLaserControlObservers() {
         //激光功率
         laserControlViewModel.getLaserPower().observe(this, power -> {
             binding.tvPowerPercent.setText(power + "%");
-        });
-
-        //激光距离
-        laserControlViewModel.getLaserDistance().observe(this, distance -> {
-            binding.tvDistance.setText(String.format(getString(R.string.ty_distance_format), distance));
-        });
-
-        //脉冲
-        laserControlViewModel.getLaserPulse().observe(this, pulse -> {
-
         });
     }
 
@@ -365,67 +366,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
             }
-        });
-    }
-
-    //设置距离
-    private void settingLaserDistance() {
-        showSettingPop(10, 9999, 4, getString(R.string.ty_distance_setting_title), R.string.ty_distance_input_tip, input -> {
-            if (input == null || input.isEmpty()) {
-                Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            try {
-                int value = Integer.parseInt(input);
-                if (value < 10 || value > 9999) {
-                    Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                laserControlViewModel.sendLaserDistance(value);
-            } catch (NumberFormatException e) {
-                Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    //设置脉冲
-    private void settingLaserPulse() {
-        showSettingPop(10, 9999, 4, getString(R.string.ty_pulse_setting), R.string.ty_distance_input_tip, input -> {
-            if (input == null || input.isEmpty()) {
-                Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            try {
-                int value = Integer.parseInt(input);
-                if (value < 10 || value > 9999) {
-                    Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                // 通过Netty发送脉冲设置指令
-                laserControlViewModel.sendLaserPulse(value);
-            } catch (NumberFormatException e) {
-                Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void showSettingPop(int minValue, int maxValue, int maxLength, String title, @StringRes int inputTip, OnInputConfirmListener confirmListener) {
-        new XPopup.Builder(this)
-                .hasStatusBar(false)
-                .hasNavigationBar(false)
-                .popupWidth(SizeUtils.dp2px(400))
-                .setPopupCallback(new TyPopCallBack(minValue, maxValue, maxLength, inputTip))
-                .asInputConfirm(title, "", confirmListener)
-                .show();
-    }
-    //endregion
-
-    //region 相机
-    private void setupCameraObservers() {
-        cameraViewModel.getCameraZoom().observe(this, zoom -> {
-            binding.tvLightTimes.setText(zoom);
         });
     }
     //endregion
@@ -568,7 +508,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         setupNettyObservers();
         // 启动Netty服务并设置消息分发
         nettyViewModel.startAndBindService();
-        nettyViewModel.dispatchMessage(cloudPlatformViewModel, laserControlViewModel);
+        nettyViewModel.dispatchMessage(cloudPlatformViewModel, laserControlViewModel, laserFocusViewModel);
     }
 
     private void setupNettyObservers() {
@@ -582,7 +522,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
     //endregion
 
-    //region获取距离和脉冲之间关系的配置json
+    //region 获取距离和脉冲之间关系的配置json
     private void initJsonData() {
         XXPermissions.with(this)
                 .permission(PermissionLists.getManageExternalStoragePermission())
@@ -591,6 +531,89 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                         DataJsonManager.getInstance().getJsonFromLocal();
                     }
                 });
+    }
+    //endregion
+
+    //region 激光焦距 调焦
+    private DistanceInputConfirmPopupView distanceInputConfirmPopupView;
+
+    private void setupLaserFocusObservers() {
+        //激光距离
+        laserFocusViewModel.getLaserDistance().observe(this, distance -> {
+            binding.tvDistance.setText(String.format(getString(R.string.ty_distance_format), distance));
+            if (distanceInputConfirmPopupView != null && distanceInputConfirmPopupView.isShow()) {
+                distanceInputConfirmPopupView.setMyContent(String.valueOf(distance));
+            }
+        });
+    }
+
+    //设置距离
+    private void settingLaserDistance() {
+        showDistancePop(10, 9999, 4, getString(R.string.ty_distance_setting_title), R.string.ty_distance_input_tip, input -> {
+            if (input == null || input.isEmpty()) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                int value = Integer.parseInt(input);
+                if (value < 10 || value > 9999) {
+                    Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                laserFocusViewModel.sendLaserPulseByDistance(value);
+            } catch (NumberFormatException e) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    //设置脉冲
+    private void settingLaserPulse() {
+        showSettingPop(10, 9999, 4, getString(R.string.ty_pulse_setting), R.string.ty_distance_input_tip, input -> {
+            if (input == null || input.isEmpty()) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                int value = Integer.parseInt(input);
+                if (value < 10 || value > 9999) {
+                    Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // 通过Netty发送脉冲设置指令
+                laserFocusViewModel.sendLaserPulse(value);
+            } catch (NumberFormatException e) {
+                Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showSettingPop(int minValue, int maxValue, int maxLength, String title, @StringRes int inputTip, OnInputConfirmListener confirmListener) {
+        new XPopup.Builder(this)
+                .hasStatusBar(false)
+                .hasNavigationBar(false)
+                .popupWidth(SizeUtils.dp2px(400))
+                .setPopupCallback(new TyPopCallBack(minValue, maxValue, maxLength, inputTip))
+                .asInputConfirm(title, "", confirmListener)
+                .show();
+    }
+
+    private void showDistancePop(int minValue, int maxValue, int maxLength, String title, @StringRes int inputTip, OnInputConfirmListener confirmListener) {
+        distanceInputConfirmPopupView = new DistanceInputConfirmPopupView(this, title, "", getString(inputTip), "10", confirmListener, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                laserFocusViewModel.getLaserDistanceByServer();
+            }
+        });
+        new XPopup.Builder(this)
+                .hasStatusBar(false)
+                .hasNavigationBar(false)
+                .popupWidth(SizeUtils.dp2px(400))
+                .setPopupCallback(new TyPopCallBack(minValue, maxValue, maxLength, inputTip))
+                .asCustom(distanceInputConfirmPopupView)
+                .show();
     }
     //endregion
 

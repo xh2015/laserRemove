@@ -26,4 +26,6 @@
     <color name="color_unconnect">#ffff0000</color>
 
     <color name="color_line">#ff666666</color>
+    <color name="color_blue">#ff0000ff</color>
+
 </resources>

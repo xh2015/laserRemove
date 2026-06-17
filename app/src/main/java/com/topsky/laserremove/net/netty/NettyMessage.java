@@ -189,20 +189,6 @@ public class NettyMessage {
         return message;
     }
 
-    /**
-     * 判断是否是云台模块消息 (0xF0-0xF7)
-     */
-    public boolean isPtzModule() {
-        return moduleCode >= MODULE_PTZ && moduleCode <= MODULE_LASER_COMMAND;
-    }
-
-    /**
-     * 判断是否是激光控制模块消息 (0xF8)
-     */
-    public boolean isLaserControlModule() {
-        return moduleCode == MODULE_LASER_CONTROL;
-    }
-
     // Getters and Setters
     public byte getHeader() {
         return header;

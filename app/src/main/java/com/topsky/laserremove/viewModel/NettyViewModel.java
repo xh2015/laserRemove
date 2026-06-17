@@ -97,25 +97,63 @@ public class NettyViewModel extends BaseViewModel implements INettyListener {
 
     //分发消息到对应的ViewModel
     public void dispatchMessage(CloudPlatformViewModel cloudPlatformViewModel,
-                                LaserControlViewModel laserControlViewModel) {
+                                LaserControlViewModel laserControlViewModel,
+                                LaserFocusViewModel laserFocusViewModel) {
         receivedMessage.observeForever(message -> {
             if (message == null) {
                 return;
             }
-
             byte moduleCode = message.getModuleCode();
+            if (moduleCode == NettyMessage.MODULE_LASER_COMMAND) {
+                byte commandCode = message.getCommandCode();
+                if (commandCode == 0x01) {
+                    //周期性上报数据
+                } else if (commandCode == 0x02) {
+                    //控制指令响应
+                    byte[] data = message.getData();
+                    if (data.length != 1) {
+                        return;
+                    }
 
-            if (moduleCode == NettyMessage.MODULE_LASER_CONTROL) {
-                //0xF3: 激光控制消息
-                if (laserControlViewModel != null) {
-                    laserControlViewModel.handleNettyMessage(message);
+                    byte controlSendFromModule = data[0];
+
+                    if (controlSendFromModule == NettyMessage.MODULE_LASER_CONTROL) {
+                        //0xF3: 激光控制消息
+                        if (laserControlViewModel != null) {
+                            laserControlViewModel.onControlSendSuccess();
+                        }
+                    } else if (controlSendFromModule == NettyMessage.MODULE_LASER_FOCUS) {
+                        //0xF6: 激光焦距
+                        if (laserFocusViewModel != null) {
+                            laserFocusViewModel.onControlSendSuccess();
+                        }
+                    } else {
+                        //云台相关消息
+                        if (cloudPlatformViewModel != null) {
+                            cloudPlatformViewModel.onControlSendSuccess();
+                        }
+                    }
                 }
             } else {
-                //云台相关消息
-                if (cloudPlatformViewModel != null) {
-                    cloudPlatformViewModel.handleNettyMessage(message);
+                if (moduleCode == NettyMessage.MODULE_LASER_CONTROL) {
+                    //0xF3: 激光控制消息
+                    if (laserControlViewModel != null) {
+                        laserControlViewModel.handleNettyMessage(message);
+                    }
+                } else if (moduleCode == NettyMessage.MODULE_LASER_FOCUS) {
+                    //0xF6: 激光焦距
+                    if (laserFocusViewModel != null) {
+                        laserFocusViewModel.handleNettyMessage(message);
+                    }
+                } else {
+                    //云台相关消息
+                    if (cloudPlatformViewModel != null) {
+                        cloudPlatformViewModel.handleNettyMessage(message);
+                    }
                 }
             }
+
+
         });
     }
 

@@ -16,6 +16,10 @@ public class CloudPlatformViewModel extends BaseViewModel {
         super(application);
     }
 
+    public void onControlSendSuccess() {
+
+    }
+
     public void handleNettyMessage(NettyMessage message) {
         if (message == null) {
             return;
