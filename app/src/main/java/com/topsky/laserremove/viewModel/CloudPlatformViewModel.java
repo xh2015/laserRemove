@@ -76,7 +76,7 @@ public class CloudPlatformViewModel extends BaseViewModel {
 
         byte moduleCode = message.getModuleCode();
         byte commandCode = message.getCommandCode();
-        if (moduleCode == NettyMessage.MODULE_PTZ && commandCode == 0x05) {
+        if (moduleCode == NettyMessage.MODULE_PTZ && commandCode == 0x06) {
             //运动状态
             byte[] data = message.getData();
             if (data.length < 2) {
@@ -120,7 +120,6 @@ public class CloudPlatformViewModel extends BaseViewModel {
                         }
                     }
                     LogUtils.d(TAG, "获取角度: x=" + (isMarkA ? axisXA : axisXB) + " y=" + (isMarkA ? axisYA : axisYB));
-                    isMarkA = null;
                 } else {
                     //循环获取
                     if (isStop) {
