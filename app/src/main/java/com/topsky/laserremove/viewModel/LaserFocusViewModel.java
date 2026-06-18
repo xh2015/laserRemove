@@ -30,6 +30,7 @@ public class LaserFocusViewModel extends BaseViewModel {
     }
 
     public void onControlSendSuccess() {
+        //注意：当前在子线程中执行，请勿在子线程中更新UI
         if (fromDistance && distance != null) {
             laserDistance.postValue(distance);
         }
@@ -37,6 +38,7 @@ public class LaserFocusViewModel extends BaseViewModel {
     }
 
     public void handleNettyMessage(NettyMessage message) {
+        //注意：当前在子线程中执行，请勿在子线程中更新UI
         if (message == null) {
             return;
         }

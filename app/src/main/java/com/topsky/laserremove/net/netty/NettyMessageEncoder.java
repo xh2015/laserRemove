@@ -23,8 +23,8 @@ public class NettyMessageEncoder extends MessageToByteEncoder<NettyMessage> {
 
         byte[] bytes = msg.toBytes();
         out.writeBytes(bytes);
-        
-        //LogUtils.d(TAG, "Encoded message: " + msg);
+
+        LogUtils.d(TAG, "Encoded message: " + NettyMessageUtils.bytesToHex(bytes));
     }
 
     @Override

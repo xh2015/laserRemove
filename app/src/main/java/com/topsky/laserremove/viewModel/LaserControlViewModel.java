@@ -33,10 +33,11 @@ public class LaserControlViewModel extends BaseViewModel {
     }
 
     public void onControlSendSuccess() {
-
+        //注意：当前在子线程中执行，请勿在子线程中更新UI
     }
 
     public void handleNettyMessage(NettyMessage message) {
+        //注意：当前在子线程中执行，请勿在子线程中更新UI
         if (message == null) {
             return;
         }

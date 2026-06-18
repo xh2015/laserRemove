@@ -173,28 +173,23 @@ public class NettyClient {
             return;
         }
 
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    channel.writeAndFlush(message).addListener(future -> {
-                        if (!future.isSuccess()) {
-                            LogUtils.e(TAG, "Send message failed: " + future.cause().getMessage());
-                            if (listener != null) {
-                                listener.onSendFailed(message, future.cause());
-                            }
-                        } else {
-                            LogUtils.d(TAG, "Message sent: " + message);
-                        }
-                    });
-                } catch (Exception e) {
-                    LogUtils.e(TAG, "Send message exception: " + e.getMessage());
+        try {
+            channel.writeAndFlush(message).addListener(future -> {
+                if (!future.isSuccess()) {
+                    LogUtils.e(TAG, "Send message failed: " + future.cause().getMessage());
                     if (listener != null) {
-                        listener.onSendFailed(message, e);
+                        listener.onSendFailed(message, future.cause());
                     }
+                } else {
+                    //LogUtils.d(TAG, "Message sent: " + message);
                 }
+            });
+        } catch (Exception e) {
+            LogUtils.e(TAG, "Send message exception: " + e.getMessage());
+            if (listener != null) {
+                listener.onSendFailed(message, e);
             }
-        });
+        }
     }
 
     //发送心跳包

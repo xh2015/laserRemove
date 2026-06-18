@@ -33,6 +33,7 @@ import com.topsky.laserremove.viewModel.LaserFocusViewModel;
 import com.topsky.laserremove.viewModel.NettyViewModel;
 import com.topsky.laserremove.viewModel.RecordViewModel;
 import com.topsky.laserremove.viewModel.ScreenshotViewModel;
+import com.topsky.laserremove.widget.CycleABCenterPopupView;
 import com.topsky.laserremove.widget.DistanceInputConfirmPopupView;
 import com.topsky.laserremove.widget.PanelView;
 
@@ -43,7 +44,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, VideoDecoderCallBack, PanelView.PanelListener {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener, VideoDecoderCallBack, PanelView.PanelListener, CycleABCenterPopupView.OnStopListener {
     private RecordViewModel recordViewModel;
     private ScreenshotViewModel screenshotViewModel;
     private CameraViewModel cameraViewModel;
@@ -74,6 +75,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.btnMarkB.setOnClickListener(this);
         binding.btnToA.setOnClickListener(this);
         binding.btnToB.setOnClickListener(this);
+        binding.btnScanPoint.setOnClickListener(this);
         binding.exMenu.setPanelListener(this);
 
         binding.tvPowerPercent.setOnClickListener(this);
@@ -85,6 +87,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         initCrosshair();
         initSpeedView();
         initLaserFocus();
+        initCycleAB();
     }
 
     private void initFPV() {
@@ -116,6 +119,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             moveToPoint(true);
         } else if (v.getId() == R.id.btn_to_b) {
             moveToPoint(false);
+        } else if (v.getId() == R.id.btn_scan_point) {
+            cycleAB();
         } else if (v.getId() == R.id.btn_slow) {
             changeSpeedType(SpeedType.SLOW);
         } else if (v.getId() == R.id.btn_middle) {
@@ -327,6 +332,19 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     //endregion
 
     //region 云台
+    private CycleABCenterPopupView cycleABCenterPopupView;
+
+    private void initCycleAB() {
+        cycleABCenterPopupView = new CycleABCenterPopupView(this);
+        cycleABCenterPopupView.setOnStopListener(this);
+        new XPopup.Builder(this)
+                .dismissOnTouchOutside(false)
+                .dismissOnBackPressed(false)
+                .hasStatusBar(false)
+                .hasNavigationBar(false)
+                .asCustom(cycleABCenterPopupView);
+    }
+
     //标定A
     private void markPoint(boolean pointA) {
         if (cloudPlatformViewModel != null) {
@@ -337,6 +355,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private void moveToPoint(boolean toA) {
         if (cloudPlatformViewModel != null) {
             cloudPlatformViewModel.controlMoveMark(toA);
+        }
+    }
+
+    private void cycleAB() {
+        if (cloudPlatformViewModel != null) {
+            cloudPlatformViewModel.cycleAB();
+        }
+    }
+
+    @Override
+    public void onStopCycle() {
+        if (cycleABCenterPopupView != null && cycleABCenterPopupView.isShow()) {
+            cycleABCenterPopupView.dismiss();
+        }
+
+        if (cloudPlatformViewModel != null) {
+            cloudPlatformViewModel.stopCycleAB();
         }
     }
 
@@ -359,6 +394,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 binding.tvVoltage.setTextColor(ColorUtils.getColor(R.color.color_red));
             } else {
                 binding.tvVoltage.setTextColor(ColorUtils.getColor(R.color.white));
+            }
+        });
+
+        cloudPlatformViewModel.getCycleAB().observe(this, cycleAB -> {
+            if (cycleAB && cycleABCenterPopupView != null && !cycleABCenterPopupView.isShow()) {
+                cycleABCenterPopupView.show();
+            } else if (!cycleAB && cycleABCenterPopupView != null && cycleABCenterPopupView.isShow()) {
+                cycleABCenterPopupView.dismiss();
             }
         });
     }
