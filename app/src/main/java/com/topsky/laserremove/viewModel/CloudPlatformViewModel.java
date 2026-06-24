@@ -57,7 +57,7 @@ public class CloudPlatformViewModel extends BaseViewModel {
     }
 
     public void onControlSendSuccess() {
-    //注意：当前在子线程中执行，请勿在子线程中更新UI
+        //注意：当前在子线程中执行，请勿在子线程中更新UI
     }
 
     public void onConnectedChange(boolean connected) {
@@ -194,11 +194,11 @@ public class CloudPlatformViewModel extends BaseViewModel {
                 break;
         }
         // 发送指令
-        /* todo NettyManager.getInstance().sendMessage(
+        NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_PTZ,
                 isPress ? (byte) 0x01 : (byte) 0x03,
                 isPress ? data : dataStop
-        );*/
+        );
     }
     //endregion
 
