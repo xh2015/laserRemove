@@ -42,9 +42,14 @@ public class CloudPlatformViewModel extends BaseViewModel {
         return cycleAB;
     }
 
+    public final MutableLiveData<Boolean> dangerous = new MutableLiveData<>(false);
+
+    public LiveData<Boolean> getDangerous() {
+        return dangerous;
+    }
+
     public CloudPlatformViewModel(@NonNull Application application) {
         super(application);
-
     }
 
     private boolean connectedTip() {
@@ -156,7 +161,7 @@ public class CloudPlatformViewModel extends BaseViewModel {
                 cycleAB.postValue(false);
             } else {
                 //1.关闭激光
-
+                dangerous.postValue(true);
                 //2.停止云台
                 stopCloudMove();
             }

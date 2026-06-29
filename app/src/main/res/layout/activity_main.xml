@@ -632,4 +632,14 @@
 
     </RadioGroup>
 
+    <!-- 红色危险警告闪烁遮罩 -->
+    <View
+        android:id="@+id/view_dangerous_flash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80FF0000"
+        android:visibility="gone"
+        android:clickable="false"
+        android:focusable="false" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

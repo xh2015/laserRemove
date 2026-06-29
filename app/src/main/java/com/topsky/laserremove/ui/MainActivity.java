@@ -1,5 +1,7 @@
 package com.topsky.laserremove.ui;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -404,6 +406,48 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                 cycleABCenterPopupView.dismiss();
             }
         });
+
+        cloudPlatformViewModel.getDangerous().observe(this, dangerous -> {
+            if (dangerous) {
+                //关闭激光
+                if (laserOn) {
+                    laserOn = false;
+                    binding.ivLaserSwitch.setSelected(false);
+                    // 通过Netty发送激光开关指令
+                    laserControlViewModel.sendLaserSwitch(false, powerPercent);
+                }
+                //屏幕红色闪烁 类似高德地图超速那种闪烁
+                //屏幕红色闪烁
+                //startDangerousFlash();
+            } else {
+                //stopDangerousFlash();
+            }
+        });
+    }
+
+    //危险警告闪烁
+    private ObjectAnimator dangerousFlashAnimator;
+
+    private void startDangerousFlash() {
+        if (binding.viewDangerousFlash.getVisibility() == View.VISIBLE) {
+            return;
+        }
+        binding.viewDangerousFlash.setVisibility(View.VISIBLE);
+        if (dangerousFlashAnimator == null) {
+            dangerousFlashAnimator = ObjectAnimator.ofFloat(binding.viewDangerousFlash, "alpha", 0f, 1f);
+            dangerousFlashAnimator.setDuration(500);
+            dangerousFlashAnimator.setRepeatCount(ValueAnimator.INFINITE);
+            dangerousFlashAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        }
+        dangerousFlashAnimator.start();
+    }
+
+    private void stopDangerousFlash() {
+        if (dangerousFlashAnimator != null) {
+            dangerousFlashAnimator.cancel();
+        }
+        binding.viewDangerousFlash.setVisibility(View.GONE);
+        binding.viewDangerousFlash.setAlpha(1f);
     }
     //endregion
 
