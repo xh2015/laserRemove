@@ -411,20 +411,36 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     private boolean laserOn = false;
 
     private void laserSwitch() {
-        laserOn = !laserOn;
-        binding.ivLaserSwitch.setSelected(laserOn);
-        // 通过Netty发送激光开关指令
-        laserControlViewModel.sendLaserSwitch(laserOn);
+        if (laserOn) {
+            //当前为开始状态 需要关闭
+            laserOn = false;
+            binding.ivLaserSwitch.setSelected(false);
+            // 通过Netty发送激光开关指令
+            laserControlViewModel.sendLaserSwitch(false, powerPercent);
+        } else {
+            //当前为关闭状态 需要打开  弹窗二次确认
+            new XPopup.Builder(this)
+                    .hasStatusBar(false)
+                    .hasNavigationBar(false)
+                    .popupWidth(SizeUtils.dp2px(400))
+                    .asConfirm(getString(R.string.ty_laser_turn_on_title), getString(R.string.ty_laser_turn_on_tip), () -> {
+                        laserOn = true;
+                        binding.ivLaserSwitch.setSelected(true);
+                        // 通过Netty发送激光开关指令
+                        laserControlViewModel.sendLaserSwitch(true, powerPercent);
+                    })
+                    .show();
+        }
     }
 
     private void setupLaserControlObservers() {
-        //激光功率
-        laserControlViewModel.getLaserPower().observe(this, power -> {
-            binding.tvPowerPercent.setText(power + "%");
-        });
+
     }
 
     //设置激光功率
+    private int powerPercent = 10;
+
+    @SuppressLint("DefaultLocale")
     private void settingPowerPercent() {
         showSettingPop(10, 100, 3, getString(R.string.ty_power_setting_title), R.string.ty_power_input_tip, input -> {
             if (input == null || input.isEmpty()) {
@@ -438,8 +454,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
                     Toast.makeText(MainActivity.this, R.string.ty_power_input_tip, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // 通过Netty发送功率设置指令
-                laserControlViewModel.sendLaserPower(value);
+                binding.tvPowerPercent.setText(String.format("%d%%", value));
+                powerPercent = value;
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
             }

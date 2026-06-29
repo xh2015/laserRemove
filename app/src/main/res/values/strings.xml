@@ -56,4 +56,6 @@
     <string name="ty_warn_laser_cycle">注意,当前正在循环激光！！！</string>
     <string name="ty_stop">停止</string>
     <string name="ty_cloud_marking">正在标记中，请稍后</string>
+    <string name="ty_laser_turn_on_title">激光开启提示</string>
+    <string name="ty_laser_turn_on_tip">是否确定打开激光，确保周围安全！</string>
 </resources>
