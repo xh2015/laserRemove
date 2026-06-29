@@ -25,7 +25,7 @@ public class LaserControlViewModel extends BaseViewModel {
 
     public void sendLaserSwitch(boolean needOpen, int powerPercent) {
         int clampedPower = Math.max(0, Math.min(100, powerPercent));
-        byte[] data = new byte[]{ (byte) (needOpen ? 0x00 : 0x01), (byte) clampedPower };
+        byte[] data = new byte[]{ (byte) (needOpen ? 0x00 : 0x01), needOpen ? (byte) clampedPower : (byte) 0x00 };
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_LASER_CONTROL,
                 (byte) 0x00,
