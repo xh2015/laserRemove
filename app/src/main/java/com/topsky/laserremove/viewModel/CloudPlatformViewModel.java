@@ -98,6 +98,7 @@ public class CloudPlatformViewModel extends BaseViewModel {
                 isStop = true;
             }
         } else if (moduleCode == NettyMessage.MODULE_PTZ && commandCode == 0x08) {
+            sendingMark = false;
             //获取角度
             byte[] data = message.getData();
             if (data.length >= 5) {
@@ -208,8 +209,14 @@ public class CloudPlatformViewModel extends BaseViewModel {
     private int axisYA;
     private int axisXB;
     private int axisYB;
+    private boolean sendingMark;
 
     public void controlCpMark(Boolean isMarkA) {
+        if (sendingMark) {
+            Toast.makeText(LaserRemoveApp.getInstance(), R.string.ty_cloud_marking, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        sendingMark = true;
         this.isMarkA = isMarkA;
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_PTZ,
@@ -227,7 +234,7 @@ public class CloudPlatformViewModel extends BaseViewModel {
 
     // region 移动到A B点
     public void controlMoveMark(boolean isPointA) {
-        //todo moveToPoint(isPointA ? axisXA : axisXB, isPointA ? axisYA : axisYB);
+        moveToPoint(isPointA ? axisXA : axisXB, isPointA ? axisYA : axisYB);
     }
 
     private void moveToPoint(int x, int y) {
@@ -273,14 +280,14 @@ public class CloudPlatformViewModel extends BaseViewModel {
     private boolean isRecycling = false;
 
     public void cycleAB() {
-        /* todo if (axisXA == 0 && axisYA == 0 && axisXB == 0 && axisYB == 0) {
+        if (axisXA == 0 && axisYA == 0 && axisXB == 0 && axisYB == 0) {
             Toast.makeText(LaserRemoveApp.getInstance(), R.string.ty_cloud_no_mark, Toast.LENGTH_SHORT).show();
             return;
         }
         cycleAB.postValue(true);
         moveToPoint(axisXA, axisYA);
         //检查是否到a
-        startReadCloud();*/
+        startReadCloud();
     }
 
     public void stopCycleAB() {

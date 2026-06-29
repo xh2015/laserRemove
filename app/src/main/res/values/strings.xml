@@ -55,4 +55,5 @@
     <string name="ty_cloud_no_mark">未标定AB点</string>
     <string name="ty_warn_laser_cycle">注意,当前正在循环激光！！！</string>
     <string name="ty_stop">停止</string>
+    <string name="ty_cloud_marking">正在标记中，请稍后</string>
 </resources>
