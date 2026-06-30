@@ -40,7 +40,8 @@
     <string name="ty_power_input_empty_tip">请输入有效数值</string>
     <string name="ty_power_input_error_tip">请输入有效的整数</string>
     <string name="ty_distance_setting_title">距离设置</string>
-    <string name="ty_distance_input_tip">请输入10~9999之间的整数</string>
+    <string name="ty_distance_input_tip">请输入3~1500之间的整数</string>
+    <string name="ty_distance_input_tip2">请输入1~20000之间的整数</string>
     <string name="ty_distance_format">%d米</string>
     <string name="ty_crosshair_coordinate" formatted="false">准心坐标 X：%d  Y：%d</string>
     <string name="ty_up">上</string>

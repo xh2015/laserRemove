@@ -19,7 +19,7 @@ public class LaserFocusViewModel extends BaseViewModel {
     private Integer distance;
 
     //距离
-    private final MutableLiveData<Integer> laserDistance = new MutableLiveData<>(10);
+    private final MutableLiveData<Integer> laserDistance = new MutableLiveData<>(0);
 
     public LiveData<Integer> getLaserDistance() {
         return laserDistance;

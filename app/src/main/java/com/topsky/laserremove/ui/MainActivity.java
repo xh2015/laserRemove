@@ -83,6 +83,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.tvPowerPercent.setOnClickListener(this);
         binding.tvDistance.setOnClickListener(this);
         binding.btnPulseSetting.setOnClickListener(this);
+        binding.btnReset.setOnClickListener(this);
         binding.ivLaserSwitch.setOnClickListener(this);
 
         initTouchCustomViewCamera();
@@ -135,6 +136,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             settingLaserDistance();
         } else if (v.getId() == R.id.btn_pulse_setting) {
             settingLaserPulse();
+        } else if (v.getId() == R.id.btn_reset) {
+            if (laserFocusViewModel != null) {
+                laserFocusViewModel.sendLaserPulse(0);
+            }
         } else if (v.getId() == R.id.btn_focus_near) {
             changeLaserFocus(true);
         } else if (v.getId() == R.id.btn_focus_far) {
@@ -756,8 +761,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     //设置距离
+    private int distance = 0;
+
     private void settingLaserDistance() {
-        showDistancePop(10, 9999, 4, getString(R.string.ty_distance_setting_title), R.string.ty_distance_input_tip, input -> {
+        showDistancePop(3, 1500, 4, getString(R.string.ty_distance_setting_title), R.string.ty_distance_input_tip, input -> {
             if (input == null || input.isEmpty()) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
                 return;
@@ -765,11 +772,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
             try {
                 int value = Integer.parseInt(input);
-                if (value < 10 || value > 9999) {
+                if (value < 3 || value > 1500) {
                     Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 laserFocusViewModel.sendLaserPulseByDistance(value);
+                distance = value;
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_error_tip, Toast.LENGTH_SHORT).show();
             }
@@ -778,7 +786,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //设置脉冲
     private void settingLaserPulse() {
-        showSettingPop(10, 9999, 4, getString(R.string.ty_pulse_setting), R.string.ty_distance_input_tip, input -> {
+        showSettingPop(1, 20000, 5, getString(R.string.ty_pulse_setting), R.string.ty_distance_input_tip2, input -> {
             if (input == null || input.isEmpty()) {
                 Toast.makeText(MainActivity.this, R.string.ty_power_input_empty_tip, Toast.LENGTH_SHORT).show();
                 return;
@@ -786,8 +794,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
             try {
                 int value = Integer.parseInt(input);
-                if (value < 10 || value > 9999) {
-                    Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip, Toast.LENGTH_SHORT).show();
+                if (value < 1 || value > 20000) {
+                    Toast.makeText(MainActivity.this, R.string.ty_distance_input_tip2, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // 通过Netty发送脉冲设置指令
@@ -809,7 +817,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
     }
 
     private void showDistancePop(int minValue, int maxValue, int maxLength, String title, @StringRes int inputTip, OnInputConfirmListener confirmListener) {
-        distanceInputConfirmPopupView = new DistanceInputConfirmPopupView(this, title, "", getString(inputTip), "10", confirmListener, new View.OnClickListener() {
+        distanceInputConfirmPopupView = new DistanceInputConfirmPopupView(this, title, "", getString(inputTip), String.valueOf(distance), confirmListener, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 laserFocusViewModel.getLaserDistanceByServer();

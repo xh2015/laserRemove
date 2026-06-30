@@ -16,7 +16,7 @@ import androidx.lifecycle.MutableLiveData;
 
 public class CameraViewModel extends BaseViewModel {
     //光学变倍
-    private final MutableLiveData<String> cameraZoom = new MutableLiveData<>("10");
+    private final MutableLiveData<String> cameraZoom = new MutableLiveData<>("1");
 
     public LiveData<String> getCameraZoom() {
         return cameraZoom;
