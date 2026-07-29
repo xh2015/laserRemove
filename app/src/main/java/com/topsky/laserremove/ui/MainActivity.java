@@ -85,6 +85,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         binding.btnPulseSetting.setOnClickListener(this);
         binding.btnReset.setOnClickListener(this);
         binding.ivLaserSwitch.setOnClickListener(this);
+        binding.btnLight.setOnClickListener(this);
 
         initTouchCustomViewCamera();
         initCrosshair();
@@ -146,6 +147,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             changeLaserFocus(false);
         } else if (v.getId() == R.id.iv_laser_switch) {
             laserSwitch();
+        } else if (v.getId() == R.id.btn_light) {
+            redlight();
         } else if (v.getId() == R.id.btn_up) {
             updateCrossHair(0);
         } else if (v.getId() == R.id.btn_down) {
@@ -458,6 +461,20 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //region 激光器控制
     private boolean laserOn = false;
+
+    private boolean redLightOn = false;
+
+    private void redlight() {
+        if (redLightOn) {
+            redLightOn = false;
+            binding.btnLight.setText("红光-开");
+        } else {
+            redLightOn = true;
+            binding.btnLight.setText("红光-关");
+        }
+
+        laserControlViewModel.sendRedLightSwitch(redLightOn);
+    }
 
     private void laserSwitch() {
         if (laserOn) {

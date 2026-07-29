@@ -29,7 +29,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 public class NettyClient {
     private static final String TAG = "NettyClient";
     // 服务器地址和端口
-    private static final String DEFAULT_HOST = "192.168.1.33";
+    private static final String DEFAULT_HOST = "192.168.144.33";
     //private static final String DEFAULT_HOST = "192.168.0.2";
     private static final int DEFAULT_PORT = 8899;
     // 心跳间隔（秒）
@@ -165,6 +165,9 @@ public class NettyClient {
 
     //发送消息
     public void sendMessage(final NettyMessage message) {
+        if (message != null) {
+            LogUtils.d(TAG, "Sending message: " + message.toString());
+        }
         if (!isConnected.get() || channel == null) {
             LogUtils.e(TAG, "Not connected, cannot send message");
             if (listener != null) {

@@ -32,4 +32,14 @@ public class LaserControlViewModel extends BaseViewModel {
                 data
         );
     }
+
+
+    public void sendRedLightSwitch(boolean turnOn) {
+        byte[] data = new byte[]{ (byte) (turnOn ? 0x02 : 0x01), (byte) 0x00 };
+        NettyManager.getInstance().sendMessage(
+                NettyMessage.MODULE_LASER_CONTROL,
+                (byte) 0x00,
+                data
+        );
+    }
 }

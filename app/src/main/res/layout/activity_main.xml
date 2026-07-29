@@ -538,9 +538,9 @@
             android:layout_marginTop="4dp"
             android:background="@drawable/ic_info_params_bg"
             android:gravity="center"
+            android:text="10%"
             android:textColor="@color/white"
-            android:textSize="10sp"
-            android:text="10%" />
+            android:textSize="10sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -587,6 +587,15 @@
         android:src="@drawable/selector_laser_switch"
         app:layout_constraintBottom_toTopOf="@id/ex_menu"
         app:layout_constraintRight_toRightOf="@id/ex_menu" />
+
+    <Button
+        android:id="@+id/btn_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="红光-开"
+        app:layout_constraintBottom_toTopOf="@id/iv_laser_switch"
+        app:layout_constraintRight_toRightOf="@id/iv_laser_switch" />
 
     <RadioGroup
         android:layout_width="wrap_content"
@@ -638,8 +647,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#80FF0000"
-        android:visibility="gone"
         android:clickable="false"
-        android:focusable="false" />
+        android:focusable="false"
+        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
