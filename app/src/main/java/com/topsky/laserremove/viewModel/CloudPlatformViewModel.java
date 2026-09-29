@@ -1,6 +1,8 @@
 package com.topsky.laserremove.viewModel;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.LogUtils;
@@ -21,6 +23,7 @@ import androidx.lifecycle.MutableLiveData;
 
 public class CloudPlatformViewModel extends BaseViewModel {
     private static final String TAG = "CloudPlatformViewModel";
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
     // 连接状态
     private final MutableLiveData<Boolean> connected = new MutableLiveData<>(false);
 
@@ -200,6 +203,14 @@ public class CloudPlatformViewModel extends BaseViewModel {
                 break;
         }
         // 发送指令
+        sendDirectionCmd(isPress, data, dataStop);
+        if (!isPress) {
+            //停止需要再发一下 云台有时无法处理第一次的指令
+            mainHandler.postDelayed(() -> sendDirectionCmd(isPress, data, dataStop), 150);
+        }
+    }
+
+    private void sendDirectionCmd(boolean isPress, byte[] data, byte[] dataStop) {
         NettyManager.getInstance().sendMessage(
                 NettyMessage.MODULE_PTZ,
                 isPress ? (byte) 0x01 : (byte) 0x03,

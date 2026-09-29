@@ -165,9 +165,6 @@ public class NettyClient {
 
     //发送消息
     public void sendMessage(final NettyMessage message) {
-        if (message != null) {
-            LogUtils.d(TAG, "Sending message: " + message.toString());
-        }
         if (!isConnected.get() || channel == null) {
             LogUtils.e(TAG, "Not connected, cannot send message");
             if (listener != null) {
@@ -390,7 +387,7 @@ public class NettyClient {
     private ScheduledExecutorService timeoutExecutor;
     private ScheduledFuture<?> timeoutCheckTask;
     private volatile long lastMessageTime = 0;
-    private static final long MESSAGE_TIMEOUT = 5000; // 5秒超时
+    private static final long MESSAGE_TIMEOUT = 60000; // 5秒超时
 
     private void initTimeOut() {
         timeoutExecutor = Executors.newSingleThreadScheduledExecutor();
