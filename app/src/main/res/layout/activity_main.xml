@@ -378,7 +378,8 @@
         <TextView
             android:id="@+id/tv_laser_connect_state"
             style="@style/styleTopStateTv"
-            android:text="@string/ty_unconnect" />
+            android:text="@string/ty_unconnect"
+            android:textColor="@color/color_unconnect" />
 
     </LinearLayout>
 
@@ -401,7 +402,8 @@
         <TextView
             android:id="@+id/tv_cloud_connect_state"
             style="@style/styleTopStateTv"
-            android:text="@string/ty_unconnect" />
+            android:text="@string/ty_unconnect"
+            android:textColor="@color/color_unconnect" />
 
     </LinearLayout>
 

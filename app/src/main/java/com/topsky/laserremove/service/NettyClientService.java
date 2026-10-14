@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 
 import com.blankj.utilcode.util.StringUtils;
@@ -32,7 +33,7 @@ public class NettyClientService extends Service implements INettyListener {
         // 创建通知渠道（Android 8.0+）
         createNotificationChannel();
         // 启动为前台服务
-        startForeground(NOTIFICATION_ID, createNotification("正在连接..."));
+        startForegroundCompat(NOTIFICATION_ID, createNotification("正在连接..."));
         // 注册Netty监听器
         NettyManager.getInstance().addListener(this);
     }
@@ -78,6 +79,14 @@ public class NettyClientService extends Service implements INettyListener {
         NotificationManager manager = getSystemService(NotificationManager.class);
         if (manager != null) {
             manager.createNotificationChannel(channel);
+        }
+    }
+
+    private void startForegroundCompat(int id, Notification notification) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(id, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+        } else {
+            startForeground(id, notification);
         }
     }
 

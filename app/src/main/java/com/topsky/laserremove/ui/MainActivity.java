@@ -648,15 +648,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
 
     //region tcp server相关
     private void initNettyViewModel() {
-        if (XXPermissions.isGrantedPermission(this, PermissionLists.getPostNotificationsPermission())) {
-            settingNettyViewModel();
-        } else {
+        settingNettyViewModel();
+        if (!XXPermissions.isGrantedPermission(this, PermissionLists.getPostNotificationsPermission())) {
             XXPermissions.with(this)
                     .permission(PermissionLists.getPostNotificationsPermission())
                     .request((grantedList, deniedList) -> {
-                        if (deniedList.isEmpty()) {
-                            settingNettyViewModel();
-                        }
                     });
         }
     }
