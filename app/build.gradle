@@ -48,6 +48,12 @@ android {
         }
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "激光破拆_${new Date().format("YYYYMMdd", TimeZone.getTimeZone("GMT+08:00"))}.apk"
+        }
+    }
+
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
