@@ -23,6 +23,8 @@ public class LaserRemoveApp extends MultiDexApplication {
         LogUtils.getConfig()
                 .setLogSwitch(BuildConfig.DEBUG);
         initNet();
+        // 初始化全局异常捕获
+        CrashHandler.getInstance().init(this);
     }
 
     public static LaserRemoveApp getInstance() {

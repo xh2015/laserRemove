@@ -228,8 +228,9 @@ public class CloudPlatformViewModel extends BaseViewModel {
     private boolean sendingMark;
 
     public void controlCpMark(Boolean isMarkA) {
-        if (sendingMark) {
-            Toast.makeText(LaserRemoveApp.getInstance(), R.string.ty_cloud_marking, Toast.LENGTH_SHORT).show();
+        if (sendingMark & !isRecycling) {
+            //放到主线程
+            mainHandler.post(() -> Toast.makeText(LaserRemoveApp.getInstance(), R.string.ty_cloud_marking, Toast.LENGTH_SHORT).show());
             return;
         }
         sendingMark = true;
