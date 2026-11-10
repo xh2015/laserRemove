@@ -408,6 +408,7 @@
     <LinearLayout
         android:id="@+id/ll_top_state_voltage"
         style="@style/styleTopStateLl"
+        android:visibility="gone"
         app:layout_constraintLeft_toRightOf="@id/ll_top_state_cloud_connect"
         app:layout_constraintTop_toTopOf="@id/ll_top_state_cloud_connect">
 
@@ -594,6 +595,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:text="红光-开"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/iv_laser_switch"
         app:layout_constraintRight_toRightOf="@id/iv_laser_switch" />
 
